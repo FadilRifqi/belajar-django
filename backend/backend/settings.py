@@ -38,7 +38,7 @@ SECRET_KEY = 'django-insecure-asew(^$0h_8pzw3fh3u4buhlgxowptt%na(3gj#=ow)jq+wnut
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "*"
+    ".vercel.app",
 ]
 
 REST_FRAMEWORK = {
