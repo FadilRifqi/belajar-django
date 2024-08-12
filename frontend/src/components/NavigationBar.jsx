@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { faCartShopping, faGear } from "@fortawesome/free-solid-svg-icons";
 
 function NavigationBar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +23,8 @@ function NavigationBar() {
     setMenuOpen(!menuOpen);
   };
 
+  const isActiveRoute = (route) => location.pathname === route;
+
   return (
     <header className="w-full flex justify-center">
       <nav
@@ -30,7 +33,12 @@ function NavigationBar() {
         }`}
       >
         <div className="text-gray-700 text-lg font-light">
-          <Link to="/" className="no-underline hover:underline">
+          <Link
+            to="/"
+            className={`hover:underline ${
+              isActiveRoute("/") ? "underline" : "no-underline "
+            }`}
+          >
             BUYEE
           </Link>
         </div>
@@ -61,20 +69,52 @@ function NavigationBar() {
           </button>
           <div
             id="navbar-default"
-            className={`text-gray-700 text-lg font-light justify-between gap-4 ${
+            className={`text-gray-700 text-lg font-light justify-between  ${
               menuOpen ? "block" : "hidden"
             } w-full md:flex md:w-auto`}
           >
-            <ul className="absolute right-0 top-0  mt-16 flex flex-col p-4 border border-gray-100 rounded bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <ul className="md:shadow-none absolute shadow-md right-0 top-0  mt-16 flex flex-col p-4 border border-gray-100 rounded bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
               <li>
-                <Link to="/settings" className="no-underline hover:underline">
-                  Settings
+                <Link
+                  to="/settings"
+                  className={`${
+                    isActiveRoute("/settings") ? "underline" : "no-underline"
+                  } hover:underline flex items-center gap-2`}
+                >
+                  <FontAwesomeIcon icon={faGear} className="md:mt-1.5" />
+                  <span className="text-gray-700 md:hidden">Settings</span>
                 </Link>
               </li>
               <li>
-                <Link to="/cart" className="no-underline hover:underline">
-                  <span className="text-gray-700">Cart </span>
-                  <FontAwesomeIcon icon={faCartShopping} />
+                <Link
+                  to="/carts"
+                  className={`${
+                    isActiveRoute("/carts") ? "underline" : "no-underline"
+                  } hover:underline flex items-center gap-2`}
+                >
+                  <FontAwesomeIcon
+                    icon={faCartShopping}
+                    className="md:mt-1.5"
+                  />
+                  <span className="text-gray-700 md:hidden">Cart</span>
+                </Link>
+              </li>
+              <hr className="my-2 md:hidden" />
+              <li>
+                <Link
+                  to="/settings/profile"
+                  className={`${
+                    isActiveRoute("/settings/profile")
+                      ? "underline"
+                      : "no-underline"
+                  } hover:underline flex items-center gap-2`}
+                >
+                  <img
+                    src="https://picsum.photos/200"
+                    alt="Profile"
+                    className="w-7 h-7 rounded-full"
+                  />
+                  <span className="text-gray-700 md:hidden">Profile</span>
                 </Link>
               </li>
             </ul>

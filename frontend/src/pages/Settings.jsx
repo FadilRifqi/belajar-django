@@ -38,7 +38,7 @@ function Settings() {
       </Helmet>
       <div
         ref={containerRef}
-        className={`w-full h-[80vh] flex flex-col lg:flex-row items-center lg:items-start justify-center p-4 transition-all duration-700 ease-in-out transform ${
+        className={`w-full h-[80vh] flex flex-col lg:flex-row items-center lg:items-start justify-center p-4 transition-all duration-700 ease-in-out transform m-2 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
       >

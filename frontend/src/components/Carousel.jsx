@@ -4,7 +4,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import "../assets/css/Carousel.css";
+import "../assets/css/carousel.css";
 
 function Carousel() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -37,7 +37,7 @@ function Carousel() {
   return (
     <section
       ref={carouselRef}
-      className={`p-2 w-full max-h-96 mb-2 transform transition-all duration-700 ease-in-out ${
+      className={`p-2 w-full pb-0 max-h-96 mb-0 md:mb-2 xl:mb-2 transform transition-all duration-700 ease-in-out ${
         isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >

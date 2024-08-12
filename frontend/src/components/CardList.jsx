@@ -52,7 +52,7 @@ function CardList({ cardData }) {
         isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
-      <div className="flex flex-wrap gap-4 p-2">
+      <div className="flex flex-wrap gap-4 mb-2 md:mb-2 xl:mb-2">
         <div className="flex flex-col w-full sm:w-auto">
           <select
             id="categoryFilter"
@@ -86,7 +86,7 @@ function CardList({ cardData }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
         {cardData.map((card) => (
           <Card
             key={card.id}
