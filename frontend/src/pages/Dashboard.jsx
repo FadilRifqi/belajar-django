@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet";
 import Card from "../components/Card";
 import Layout from "./layouts/Layout";
 
@@ -21,31 +22,43 @@ const cardData = [
     content: "Tas adalah wadah yang digunakan untuk membawa barang.",
     price: 200000,
   },
+  {
+    id: 4,
+    title: "Celana",
+    content: "Celana adalah pakaian yang dikenakan pada pinggang dan kaki.",
+    price: 250000,
+  },
+  {
+    id: 5,
+    title: "Topi",
+    content:
+      "Topi adalah penutup kepala yang biasa digunakan sebagai aksesoris.",
+    price: 300000,
+  },
+  {
+    id: 6,
+    title: "Kacamata",
+    content: "Kacamata adalah alat bantu penglihatan yang dikenakan di mata.",
+    price: 350000,
+  },
 ];
 
 function Dashboard() {
   return (
     <Layout>
-      <div className="h-screen bg-gray-100">
-        <header className="flex justify-between items-center p-6 bg-white shadow mb-6">
-          <h1 className="text-3xl font-semibold text-gray-900">Dashboard</h1>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Add New
-          </button>
-        </header>
-        <main className="p-6">
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cardData.map((card) => (
-              <Card
-                key={card.id}
-                title={card.title}
-                content={card.content}
-                price={card.price}
-              />
-            ))}
-          </section>
-        </main>
-      </div>
+      <Helmet>
+        <title>Buyee | Dashboard</title>
+      </Helmet>
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {cardData.map((card) => (
+          <Card
+            key={card.id}
+            title={card.title}
+            content={card.content}
+            price={card.price}
+          />
+        ))}
+      </section>
     </Layout>
   );
 }

@@ -3,9 +3,11 @@ import NavigationBar from "../../components/NavigationBar";
 
 function Layout({ children }) {
   return (
-    <div className="container">
+    <div className="min-h-screen">
       <NavigationBar />
-      {children}
+      <div className="h-screen pt-10 ">
+        <main className="p-6">{children}</main>
+      </div>
     </div>
   );
 }
