@@ -34,9 +34,9 @@ function NavigationBar() {
       >
         <div className="text-gray-700 text-lg font-light">
           <Link
-            to="/"
+            to="/dashboard"
             className={`hover:underline ${
-              isActiveRoute("/") ? "underline" : "no-underline "
+              isActiveRoute("/dashboard") ? "underline" : "no-underline "
             }`}
           >
             BUYEE
