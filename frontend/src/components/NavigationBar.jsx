@@ -24,10 +24,10 @@ function NavigationBar() {
   return (
     <header className="w-full">
       <nav
-        className={`min-w-full flex justify-between transition-colors items-center p-4 px-8 fixed top-0 ${
+        className={`flex justify-between transition-colors items-center p-4 px-8 fixed top-0 ${
           scrolled
-            ? "bg-white shadow-md min-w-[96%] left-1/2  -translate-x-1/2 mt-4 rounded-md"
-            : ""
+            ? "bg-white shadow-md w-[96%] left-1/2  -translate-x-1/2 mt-4 rounded-md"
+            : "min-w-full"
         }`}
       >
         {" "}
