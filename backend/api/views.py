@@ -1,14 +1,14 @@
 from django.shortcuts import render
-from django.contrib.auth.models import User
-from rest_framework import generics
-from .serializers import UserSerializer, MessageSerializer,ProductSerializer
+from rest_framework import generics,status
+from .serializers import UserSerializer, MessageSerializer,ProductSerializer, LoginSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Message , Product
+from .models import Message , Product, CustomUser
 from django.db.models import Q
+from rest_framework.response import Response
 
 # Create your views here.
 class CreateUserView(generics.CreateAPIView):
-    queryset = User.objects.all()
+    queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
@@ -77,3 +77,13 @@ class AllProductListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Product.objects.all()
+    
+class LoginView(generics.views.APIView):
+    serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)  # Validate the data
+        tokens = serializer.create(serializer.validated_data)  # Create tokens using validated data
+        return Response(tokens, status=status.HTTP_200_OK)

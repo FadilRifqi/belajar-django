@@ -9,11 +9,18 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+AUTH_USER_MODEL = 'api.CustomUser'
+AUTHENTICATION_BACKENDS = [
+    'api.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 import os
+
+
 
 load_dotenv()
 
