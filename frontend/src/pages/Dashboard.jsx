@@ -41,6 +41,32 @@ const cardData = [
     content: "Kacamata adalah alat bantu penglihatan yang dikenakan di mata.",
     price: 350000,
   },
+  {
+    id: 7,
+    title: "Jam Tangan",
+    content:
+      "Jam tangan adalah alat penunjuk waktu yang dikenakan di pergelangan tangan.",
+    price: 400000,
+  },
+  {
+    id: 8,
+    title: "Perhiasan",
+    content: "Perhiasan adalah barang yang digunakan untuk mempercantik diri.",
+    price: 450000,
+  },
+  {
+    id: 9,
+    title: "Dompet",
+    content: "Dompet adalah tempat penyimpanan uang dan kartu.",
+    price: 500000,
+  },
+  {
+    id: 10,
+    title: "Pakaian Dalam",
+    content:
+      "Pakaian dalam adalah pakaian yang dikenakan di bawah pakaian luar.",
+    price: 550000,
+  },
 ];
 
 function Dashboard() {
