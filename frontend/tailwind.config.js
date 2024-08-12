@@ -9,6 +9,15 @@ export default {
         serif: ["Roboto Mono", "monospace"],
         mono: ["Roboto Mono", "monospace"],
       },
+      keyframes: {
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(10px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        "fade-in-up": "fade-in-up 0.7s ease-in-out",
+      },
     },
   },
   plugins: [flowbite.plugin()],

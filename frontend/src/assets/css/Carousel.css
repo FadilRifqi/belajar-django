@@ -1,0 +1,97 @@
+/* Base styles for Swiper buttons and pagination bullets */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #fff; /* Button text/icon color */
+  background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+  border-radius: 50%; /* Round buttons */
+  width: 50px; /* Increased size for better usability */
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background-color: rgba(0, 0, 0, 0.9); /* Darker background on hover */
+  transform: scale(1.1); /* Slightly increase size on hover */
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 18px; /* Adjust icon size */
+}
+
+.swiper-button-next {
+  right: 10px; /* Slightly adjust position for better alignment */
+}
+
+.swiper-button-prev {
+  left: 10px;
+}
+
+.swiper-pagination-bullet {
+  background: #ffffff; /* Bullet color */
+  opacity: 1; /* Full opacity */
+  width: 12px; /* Bullet width */
+  height: 12px; /* Bullet height */
+  border-radius: 20px; /* Make bullets round */
+  transition: background-color 0.3s, width 0.3s; /* Smooth transitions */
+}
+
+.swiper-pagination-bullet-active {
+  background: #6b7280; /* Active bullet color */
+  width: 16px; /* Larger size for active bullet */
+}
+
+/* Optional: Center pagination bullets */
+.swiper-pagination {
+  bottom: 10px; /* Adjust vertical position */
+}
+
+/* Responsive styles */
+@media (max-width: 1024px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 40px; /* Smaller size for tablets */
+    height: 40px;
+  }
+
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 16px; /* Smaller icon size for tablets */
+  }
+
+  .swiper-pagination-bullet {
+    width: 10px; /* Smaller bullet size for tablets */
+    height: 10px;
+  }
+
+  .swiper-pagination-bullet-active {
+    width: 14px; /* Smaller active bullet size for tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 30px; /* Smaller size for mobile devices */
+    height: 30px;
+  }
+
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 14px; /* Smaller icon size for mobile devices */
+  }
+
+  .swiper-pagination-bullet {
+    width: 8px; /* Smaller bullet size for mobile devices */
+    height: 8px;
+  }
+
+  .swiper-pagination-bullet-active {
+    width: 12px; /* Smaller active bullet size for mobile devices */
+  }
+}

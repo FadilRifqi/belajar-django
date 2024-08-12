@@ -33,25 +33,30 @@ function Card({ title, content, price }) {
   return (
     <div
       ref={cardRef}
-      className={`bg-white rounded min-h-52 transition-all duration-700 ease-in-out transform ${
+      className={`bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-700 ease-in-out transform flex flex-col ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
-      <div className="">
+      <div className="w-full sm:h-24 md:h-48 lg:h-64">
         <img
           src="https://via.placeholder.com/150"
           alt="placeholder"
-          className="w-full h-60 object-cover rounded"
+          className="w-full h-full object-cover"
         />
       </div>
-      <div className="p-4 text-center ">
-        <p className="font-semibold mb-2 text-gray-400">{title}</p>
-        <hr />
-        <br />
-        <p className="text-gray-400">
-          {content} Rp. {price}
+      <div className="sm:p-3 md:p-4 lg:p-6 flex-grow">
+        <p className="font-semibold mb-2 text-gray-700 text-base text-center">
+          {title}
         </p>
-        <Button onClick={() => alert("Buy")}>Buy</Button>
+        <hr className="border-gray-300 sm:my-3 md:my-4 lg:my-6" />
+        <p className="text-gray-600 text-xs text-center">
+          {content} <span className="font-medium">Rp. {price}</span>
+        </p>
+      </div>
+      <div className="mt-auto px-1 pb-1 sm:p-3 md:p-4 lg:p-6">
+        <Button className="w-full" onClick={() => alert("Buy")}>
+          Buy
+        </Button>
       </div>
     </div>
   );

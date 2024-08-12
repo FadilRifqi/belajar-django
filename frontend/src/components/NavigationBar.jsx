@@ -67,13 +67,13 @@ function NavigationBar() {
           >
             <ul className="absolute right-0 top-0  mt-16 flex flex-col p-4 border border-gray-100 rounded bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
               <li>
-                <Link to="/profile" className="no-underline hover:underline">
-                  Profile
+                <Link to="/settings" className="no-underline hover:underline">
+                  Settings
                 </Link>
               </li>
               <li>
                 <Link to="/cart" className="no-underline hover:underline">
-                  <span className="md:hidden text-gray-700">Cart</span>
+                  <span className="text-gray-700">Cart </span>
                   <FontAwesomeIcon icon={faCartShopping} />
                 </Link>
               </li>
