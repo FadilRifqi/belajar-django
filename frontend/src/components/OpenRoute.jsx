@@ -4,9 +4,9 @@ import { jwtDecode } from "jwt-decode";
 import api from "../api";
 import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constant";
 import LoadingComponent from "./LoadingComponent";
-import AuthContext from "./AuthContext"; 
+import AuthContext from "./AuthContext";
 
-function ProtectedRoute({ children }) {
+function OpenRoute({ children }) {
   const [isAuthorized, setIsAuthorized] = React.useState(null);
   const [decodedToken, setDecodedToken] = React.useState(null); // State to hold decoded token
 
@@ -57,10 +57,8 @@ function ProtectedRoute({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={decodedToken}>
-      {isAuthorized ? children : <Navigate to="/login" />}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={decodedToken}>{children}</AuthContext.Provider>
   );
 }
 
-export default ProtectedRoute;
+export default OpenRoute;

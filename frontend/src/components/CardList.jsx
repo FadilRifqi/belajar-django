@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import Card from "./Card";
 import PropTypes from "prop-types";
+import LoadingComponent from "./LoadingComponent";
 
-function CardList({ cardData }) {
+function CardList({ products, loading }) {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -48,7 +49,7 @@ function CardList({ cardData }) {
   return (
     <section
       ref={sectionRef}
-      className={`p-2 transition-opacity duration-1000 ease-in-out ${
+      className={`px-3 py-6 transition-opacity duration-1000 ease-in-out m-4 rounded shadow-xl ${
         isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
@@ -60,7 +61,7 @@ function CardList({ cardData }) {
             onChange={handleCategoryChange}
             className="p-2 border border-gray-300 rounded-md text-sm "
           >
-            <option selected>Category</option>
+            <option>Category</option>
             {/* Add your category options here */}
           </select>
         </div>
@@ -71,7 +72,7 @@ function CardList({ cardData }) {
             onChange={handlePriceChange}
             className="p-2 border border-gray-300 rounded-md text-sm focus:outline-none"
           >
-            <option selected>Price</option>
+            <option>Price</option>
           </select>
         </div>
         <div className="flex flex-col w-full sm:w-auto">
@@ -81,34 +82,42 @@ function CardList({ cardData }) {
             onChange={handleReviewChange}
             className="p-2 border border-gray-300 rounded-md text-sm focus:outline-none"
           >
-            <option selected>Review</option>
+            <option>Review</option>
           </select>
         </div>
       </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 xl:gap-6">
-        {cardData.map((card) => (
-          <Card
-            key={card.id}
-            title={card.title}
-            content={card.content}
-            price={card.price}
-          />
-        ))}
+      <div className="">
+        <div
+          className={`${
+            loading || products.length === 0
+              ? "flex justify-center items-center"
+              : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 xl:gap-6"
+          }`}
+        >
+          {loading ? (
+            <div className="flex justify-center items-center">
+              <LoadingComponent />
+            </div>
+          ) : products.length !== 0 ? (
+            products.map((card) => (
+              <Card
+                image={card.image}
+                key={card.id}
+                title={card.name}
+                content={card.description}
+                price={card.price}
+              />
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-center w-full h-full text-center text-red-500">
+              <h2 className="text-2xl font-bold">Internal Server Error</h2>
+              <p className="mt-2 text-lg">Please try again later.</p>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
 }
-
-CardList.propTypes = {
-  cardData: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      title: PropTypes.string.isRequired,
-      content: PropTypes.string.isRequired,
-      price: PropTypes.number.isRequired,
-    })
-  ).isRequired,
-};
 
 export default CardList;

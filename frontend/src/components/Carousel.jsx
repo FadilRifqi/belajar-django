@@ -3,8 +3,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
 import "../assets/css/carousel.css";
+import carousel1 from "../assets/images/carousel1.webp";
+import carousel2 from "../assets/images/carousel2.webp";
+import carousel3 from "../assets/images/carousel3.webp";
+import carousel4 from "../assets/images/carousel4.webp";
 
 function Carousel() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -37,7 +41,7 @@ function Carousel() {
   return (
     <section
       ref={carouselRef}
-      className={`p-2 w-full pb-0 max-h-96 mb-0 md:mb-2 xl:mb-2 transform transition-all duration-700 ease-in-out ${
+      className={`p-4 mt-4 w-full pb-0 max-h-96 transform transition-all duration-700 ease-in-out ${
         isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
@@ -47,37 +51,33 @@ function Carousel() {
           delay: 2500,
           disableOnInteraction: false,
         }}
-        pagination={{
-          clickable: true,
-        }}
-        // navigation={true}
-        modules={[Autoplay, Pagination, Navigation]}
-        className="max-h-96"
+        modules={[Autoplay]}
+        className="max-h-96 rounded shadow-xl"
       >
         <SwiperSlide>
           <img
-            src="https://via.placeholder.com/800x400"
+            src={carousel1}
             alt="Slide 1"
             className="w-full max-h-96 object-cover"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
-            src="https://via.placeholder.com/800x400"
+            src={carousel2}
             alt="Slide 2"
             className="w-full max-h-96 object-cover"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
-            src="https://via.placeholder.com/800x400"
+            src={carousel3}
             alt="Slide 3"
             className="w-full max-h-96 object-cover"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
-            src="https://via.placeholder.com/800x400"
+            src={carousel4}
             alt="Slide 4"
             className="w-full max-h-96 object-cover"
           />

@@ -27,9 +27,20 @@ function Login() {
       });
       localStorage.setItem(ACCESS_TOKEN, res.data.access);
       localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.data) {
+        if (error.response.data.non_field_errors) {
+          setError(error.response.data.non_field_errors[0]);
+        } else if (error.response.data.detail) {
+          setError(error.response.data.detail);
+        } else {
+          setError("An unexpected error occurred.");
+        }
+      } else {
+        setError("An unexpected error occurred.");
+      }
+      console.error(error.response.data);
     } finally {
       setLoading(false);
     }
@@ -96,7 +107,7 @@ function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <div className="mb-6">
+              <div className={`${error ? "mb-2" : "mb-4"}`}>
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="password"
@@ -113,6 +124,9 @@ function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
+              {error && (
+                <div className="text-center mb-4 text-red-600">{error}</div>
+              )}
               <div className="flex items-center justify-between">
                 <button
                   disabled={loading}

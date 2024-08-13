@@ -1,11 +1,56 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet";
 import Layout from "./layouts/Layout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../api";
+import LoadingComponent from "../components/LoadingComponent";
 
 function Register() {
   const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef(null);
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    setLoading(true);
+    e.preventDefault();
+    try {
+      await api.post("/api/user/register/", {
+        username,
+        email,
+        password,
+      });
+      navigate("/login");
+    } catch (error) {
+      if (error.response && error.response.data) {
+        if (error.response.data.email) {
+          setError(error.response.data.email[0]);
+        } else if (error.response.data.username) {
+          setError(error.response.data.username[0]);
+        } else {
+          setError("An unexpected error occurred.");
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUsernameChange = (e) => {
+    setUsername(e.target.value);
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -43,8 +88,13 @@ function Register() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
+          {loading && (
+            <div className="absolute inset-0 flex justify-center items-center bg-white bg-opacity-75">
+              <LoadingComponent />
+            </div>
+          )}
           <h1 className="text-4xl text-center text-gray-700 mb-6">Register</h1>
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
@@ -53,10 +103,13 @@ function Register() {
                 Username
               </label>
               <input
+                required
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="username"
                 type="text"
                 placeholder="Enter your username"
+                onChange={handleUsernameChange}
+                value={username}
               />
             </div>
             <div className="mb-4">
@@ -67,10 +120,13 @@ function Register() {
                 Email
               </label>
               <input
+                required
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 id="email"
                 type="email"
                 placeholder="Enter your email"
+                onChange={handleEmailChange}
+                value={email}
               />
             </div>
             <div className="mb-6">
@@ -81,16 +137,20 @@ function Register() {
                 Password
               </label>
               <input
+                required
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                 id="password"
                 type="password"
                 placeholder="Enter your password"
+                onChange={handlePasswordChange}
+                value={password}
               />
             </div>
             <div className="flex items-center justify-between">
               <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="button"
+                disabled={loading}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:bg-blue-500"
+                type="submit"
               >
                 Register
               </button>

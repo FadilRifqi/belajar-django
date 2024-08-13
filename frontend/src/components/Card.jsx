@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import Button from "./Button";
 
-function Card({ title, content, price }) {
+function Card({ title, content, price, image }) {
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef(null);
 
@@ -33,15 +33,15 @@ function Card({ title, content, price }) {
   return (
     <div
       ref={cardRef}
-      className={`bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-700 ease-in-out transform flex flex-col ${
+      className={`bg-white rounded-lg shadow-md overflow-hidden transition-all duration-700 ease-in-out transform flex flex-col ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
       <div className="w-full sm:h-24 md:h-48 lg:h-64">
         <img
-          src="https://via.placeholder.com/150"
+          src={image ? image : "https://via.placeholder.com/150"}
           alt="placeholder"
-          className="w-full h-full object-cover"
+          className="w-full max-h-full object-fill"
         />
       </div>
       <div className="sm:p-3 md:p-4 lg:p-6 flex-grow">

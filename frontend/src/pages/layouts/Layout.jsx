@@ -6,7 +6,7 @@ function Layout({ children }) {
     <div className="min-h-screen">
       <NavigationBar />
       <div className="h-screen pt-10 ">
-        <main className="p-6">{children}</main>
+        <main className="p-">{children}</main>
       </div>
     </div>
   );

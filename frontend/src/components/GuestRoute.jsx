@@ -4,11 +4,9 @@ import { jwtDecode } from "jwt-decode";
 import api from "../api";
 import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constant";
 import LoadingComponent from "./LoadingComponent";
-import AuthContext from "./AuthContext"; 
 
-function ProtectedRoute({ children }) {
+function GuestRoute({ children }) {
   const [isAuthorized, setIsAuthorized] = React.useState(null);
-  const [decodedToken, setDecodedToken] = React.useState(null); // State to hold decoded token
 
   React.useEffect(() => {
     auth().catch((error) => {
@@ -30,6 +28,7 @@ function ProtectedRoute({ children }) {
       }
     } catch (error) {
       setIsAuthorized(false);
+      console.log(error);
     }
   };
 
@@ -40,8 +39,6 @@ function ProtectedRoute({ children }) {
       return;
     }
     const decoded = jwtDecode(token);
-    setDecodedToken(decoded); // Set the decoded token
-
     const tokenExpiration = decoded.exp * 1000;
     const now = Date.now();
 
@@ -56,11 +53,7 @@ function ProtectedRoute({ children }) {
     return <LoadingComponent />;
   }
 
-  return (
-    <AuthContext.Provider value={decodedToken}>
-      {isAuthorized ? children : <Navigate to="/login" />}
-    </AuthContext.Provider>
-  );
+  return isAuthorized ? <Navigate to={"/"} /> : children;
 }
 
-export default ProtectedRoute;
+export default GuestRoute;

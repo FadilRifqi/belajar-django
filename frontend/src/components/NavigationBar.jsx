@@ -1,12 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping, faGear } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCartShopping,
+  faGear,
+  faSearch,
+  faSignInAlt,
+  faSignOutAlt,
+  faStore,
+} from "@fortawesome/free-solid-svg-icons";
+import { REFRESH_TOKEN } from "../constant";
+import AuthContext from "./AuthContext";
 
 function NavigationBar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const token = localStorage.getItem(REFRESH_TOKEN);
+  const decodedToken = useContext(AuthContext);
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +33,15 @@ function NavigationBar() {
     };
   }, []);
 
+  const toggleSearch = () => {
+    setIsSearchVisible(!isSearchVisible);
+    if (!isSearchVisible) {
+      setTimeout(() => {
+        searchInputRef.current.focus();
+      }, 0);
+    }
+  };
+
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -28,19 +51,33 @@ function NavigationBar() {
   return (
     <header className="w-full flex justify-center">
       <nav
-        className={`z-10 flex justify-between transition-all items-center p-4 px-8 fixed top-0 ${
+        className={`z-20 flex justify-between transition-all items-center p-4 px-8 fixed top-0 ${
           scrolled ? "bg-white shadow-md w-[96%] mt-4 rounded-md" : "w-full"
         }`}
       >
-        <div className="text-gray-700 text-lg font-light">
+        <div className="text-gray-700 text-lg font-light flex gap-4">
           <Link
-            to="/dashboard"
+            to="/"
             className={`hover:underline ${
-              isActiveRoute("/dashboard") ? "underline" : "no-underline "
+              isActiveRoute("/") ? "underline" : "no-underline "
             }`}
           >
             BUYEE
           </Link>
+          <div className="cursor-pointer" onClick={toggleSearch}>
+            <FontAwesomeIcon icon={faSearch} />
+          </div>
+          {isSearchVisible && (
+            <input
+              type="text"
+              placeholder="Search for products"
+              className="p-1 z-10 mt-8 md:mt-0 w-[calc(100%-1rem)] md:w-auto border rounded absolute md:relative left-2 right-2"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onBlur={() => setIsSearchVisible(false)}
+              ref={searchInputRef}
+            />
+          )}
         </div>
         <div className="md:flex flex flex-col">
           <button
@@ -73,7 +110,25 @@ function NavigationBar() {
               menuOpen ? "block" : "hidden"
             } w-full md:flex md:w-auto`}
           >
-            <ul className="md:shadow-none absolute shadow-md right-0 top-0  mt-16 flex flex-col p-4 border border-gray-100 rounded bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <ul className="md:shadow-none absolute shadow-md right-0 top-0 mt-16 flex flex-col p-4 border border-gray-100 rounded bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-transparent dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700">
+              <li>
+                <Link
+                  to={token ? "/logout" : "/login"}
+                  className={`${
+                    isActiveRoute(token ? "/logout" : "/login")
+                      ? "underline"
+                      : "no-underline"
+                  } hover:underline flex items-center gap-2`}
+                >
+                  <FontAwesomeIcon
+                    icon={token ? faSignOutAlt : faSignInAlt}
+                    className="md:mt-1"
+                  />
+                  <span className="text-gray-700">
+                    {token ? "Logout" : "Login"}
+                  </span>
+                </Link>
+              </li>
               <li>
                 <Link
                   to="/settings"
@@ -81,8 +136,8 @@ function NavigationBar() {
                     isActiveRoute("/settings") ? "underline" : "no-underline"
                   } hover:underline flex items-center gap-2`}
                 >
-                  <FontAwesomeIcon icon={faGear} className="md:mt-1.5" />
-                  <span className="text-gray-700 md:hidden">Settings</span>
+                  <FontAwesomeIcon icon={faGear} className="md:mt-1" />
+                  <span className="text-gray-700">Settings</span>
                 </Link>
               </li>
               <li>
@@ -92,11 +147,19 @@ function NavigationBar() {
                     isActiveRoute("/carts") ? "underline" : "no-underline"
                   } hover:underline flex items-center gap-2`}
                 >
-                  <FontAwesomeIcon
-                    icon={faCartShopping}
-                    className="md:mt-1.5"
-                  />
-                  <span className="text-gray-700 md:hidden">Cart</span>
+                  <FontAwesomeIcon icon={faCartShopping} className="md:mt-1" />
+                  <span className="text-gray-700">Cart</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard"
+                  className={`${
+                    isActiveRoute("/dashboard") ? "underline" : "no-underline"
+                  } hover:underline flex items-center gap-2`}
+                >
+                  <FontAwesomeIcon icon={faStore} />
+                  <span className="text-gray-700">Dashboard</span>
                 </Link>
               </li>
               <hr className="my-2 md:hidden" />
@@ -110,11 +173,21 @@ function NavigationBar() {
                   } hover:underline flex items-center gap-2`}
                 >
                   <img
-                    src="https://picsum.photos/200"
+                    src={
+                      decodedToken && decodedToken.profile_picture
+                        ? decodedToken.profile_picture
+                        : "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?size=626&ext=jpg"
+                    }
                     alt="Profile"
                     className="w-7 h-7 rounded-full"
                   />
-                  <span className="text-gray-700 md:hidden">Profile</span>
+                  {decodedToken ? (
+                    <span className="text-gray-700 md:hidden">
+                      {decodedToken.username}
+                    </span>
+                  ) : (
+                    <span className="text-gray-700 md:hidden">Profile</span>
+                  )}
                 </Link>
               </li>
             </ul>

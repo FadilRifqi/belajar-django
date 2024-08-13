@@ -4,6 +4,9 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}", flowbite.content()],
   theme: {
     extend: {
+      boxShadow: {
+        "3xl": "1px 3px 14px -1px rgba(0,0,0,0.75)",
+      },
       fontFamily: {
         sans: ["Roboto Mono", "monospace"],
         serif: ["Roboto Mono", "monospace"],

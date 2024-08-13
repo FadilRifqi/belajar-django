@@ -7,6 +7,9 @@ import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Home from "./pages/Home";
+import GuestRoute from "./components/GuestRoute";
+import OpenRoute from "./components/OpenRoute";
 
 function Logout() {
   localStorage.clear();
@@ -15,17 +18,46 @@ function Logout() {
 
 function RegisterAndLogout() {
   localStorage.clear();
-  return <Navigate to="/register" />;
+  return <Register />;
 }
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/login"
+          element={
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <GuestRoute>
+              <RegisterAndLogout />
+            </GuestRoute>
+          }
+        />
 
+        <Route
+          path="/logout"
+          element={
+            <ProtectedRoute>
+              <Logout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <OpenRoute>
+              <Home />
+            </OpenRoute>
+          }
+        />
         <Route
           path="/dashboard"
           element={
@@ -58,14 +90,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="*"
-          element={
-            <ProtectedRoute>
-              <NotFound />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
