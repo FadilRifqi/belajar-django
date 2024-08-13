@@ -41,7 +41,7 @@ function Carousel() {
   return (
     <section
       ref={carouselRef}
-      className={`p-4 mt-4 w-full pb-0 max-h-96 transform transition-all duration-700 ease-in-out ${
+      className={`p-4 mt-4 mb-2 w-full pb-0 h-[20vh] md:h-96 transform transition-all duration-700 ease-in-out ${
         isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
       }`}
     >
@@ -52,34 +52,34 @@ function Carousel() {
           disableOnInteraction: false,
         }}
         modules={[Autoplay]}
-        className="max-h-96 rounded shadow-xl"
+        className="md:h-96 h-[20vh] rounded"
       >
         <SwiperSlide>
           <img
             src={carousel1}
             alt="Slide 1"
-            className="w-full max-h-96 object-cover"
+            className="w-full md:h-96 h-[20vh] object-fill md:object-cover"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
             src={carousel2}
             alt="Slide 2"
-            className="w-full max-h-96 object-cover"
+            className="w-full md:h-96 h-[20vh] object-fill md:object-cover"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
             src={carousel3}
             alt="Slide 3"
-            className="w-full max-h-96 object-cover"
+            className="w-full md:h-96 h-[20vh] object-fill md:object-cover"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
             src={carousel4}
             alt="Slide 4"
-            className="w-full max-h-96 object-cover"
+            className="w-full h-[20vh] md:h-96 object-fill md:object-cover"
           />
         </SwiperSlide>
       </Swiper>

@@ -48,11 +48,11 @@ function CardList({ products, loading }) {
   return (
     <section
       ref={sectionRef}
-      className={`px-3 py-6 transition-opacity duration-1000 ease-in-out m-4 rounded shadow-xl ${
+      className={`px-3 py-6 min-h-[40vh] transition-opacity duration-1000 ease-in-out rounded ${
         isVisible ? "opacity-100" : "opacity-0"
       }`}
     >
-      <div className="flex flex-wrap gap-4 mb-2 md:mb-2 xl:mb-2">
+      <div className="flex flex-wrap gap-4 mb-4">
         <div className="flex flex-col w-full sm:w-auto">
           <select
             id="categoryFilter"
@@ -89,12 +89,12 @@ function CardList({ products, loading }) {
         <div
           className={`${
             loading || products.length === 0
-              ? "flex justify-center items-center"
+              ? "flex h-full min-h-[20vh] flex-col justify-center items-center"
               : "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 xl:gap-6"
           }`}
         >
           {loading ? (
-            <div className="flex justify-center items-center">
+            <div className="flex  justify-center items-center">
               <LoadingComponent />
             </div>
           ) : products.length !== 0 ? (
@@ -108,7 +108,7 @@ function CardList({ products, loading }) {
               />
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center w-full h-full text-center text-red-500">
+            <div className="w-full h-full text-center text-red-500">
               <h2 className="text-2xl font-bold">Internal Server Error</h2>
               <p className="mt-2 text-lg">Please try again later.</p>
             </div>
