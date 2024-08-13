@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet";
 import Layout from "./layouts/Layout";
 import { motion } from "framer-motion";
-import { Bar, Radar, Pie } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import { ToastContainer, toast } from "react-toastify";
 import {
   Chart as ChartJS,
@@ -43,8 +43,6 @@ Modal.setAppElement("#root");
 
 function Dashboard() {
   const barChartRef = useRef(null);
-  const radarChartRef = useRef(null);
-  const pieChartRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
@@ -52,7 +50,6 @@ function Dashboard() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [id, setId] = useState(null);
-  const [error, setError] = useState(null);
 
   const [createModal, setCreateModalIsOpen] = useState(false);
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
@@ -83,11 +80,6 @@ function Dashboard() {
       }
     }
     fetchProducts();
-    return () => {
-      if (barChartRef.current) barChartRef.current.destroy();
-      if (radarChartRef.current) radarChartRef.current.destroy();
-      if (pieChartRef.current) pieChartRef.current.destroy();
-    };
   }, [loading]);
 
   const openCreateModal = () => {
@@ -126,7 +118,7 @@ function Dashboard() {
     }
     e.preventDefault();
     try {
-      const res = await api.post("/api/products/", formData);
+      await api.post("/api/products/", formData);
       toast.success("Product created successfully!");
       setCreateModalIsOpen(false);
     } catch (error) {
@@ -134,7 +126,6 @@ function Dashboard() {
     } finally {
       setLoading(false);
     }
-    closeModal();
   };
 
   const handleEdit = async (e) => {
@@ -148,7 +139,7 @@ function Dashboard() {
       formData.append("image", selectedImage);
     }
     try {
-      const res = await api.patch(`/api/products/edit/${id}/`, formData);
+      await api.patch(`/api/products/edit/${id}/`, formData);
       toast.success("Product updated successfully!");
       setEditModalIsOpen(false);
     } catch (error) {
@@ -161,8 +152,9 @@ function Dashboard() {
 
   const handleDelete = async (e) => {
     setLoading(true);
+    e.preventDefault();
     try {
-      const res = await api.delete(`/api/products/delete/${id}/`);
+      await api.delete(`/api/products/delete/${id}/`);
       toast.success("Product deleted successfully!");
       setDeleteModalIsOpen(false);
     } catch (error) {
@@ -248,10 +240,12 @@ function Dashboard() {
                     <span>{product.percentage}</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
-                    <div
+                    <motion.div
                       className={`${product.color} h-2.5 rounded-full`}
-                      style={{ width: product.percentage }}
-                    ></div>
+                      initial={{ width: 0 }}
+                      animate={{ width: product.percentage }}
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                    ></motion.div>
                   </div>
                 </li>
               ))}
@@ -287,7 +281,13 @@ function Dashboard() {
               {products.length > 0 ? (
                 products.map((product, key) => {
                   return (
-                    <div className="w-full min-h-[20rem] rounded overflow-hidden shadow-lg flex flex-col">
+                    <motion.div
+                      key={key}
+                      className="w-full min-h-[20rem] rounded overflow-hidden shadow-lg flex flex-col"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                    >
                       <img
                         className="w-full max-h-[10rem] object-fill"
                         src={product.image}
@@ -304,21 +304,27 @@ function Dashboard() {
                           Price: ${product.price}
                         </p>
                         <div className="flex justify-center gap-4 mt-4">
-                          <button
+                          <motion.button
                             className="bg-blue-500 text-white px-4 py-2 rounded"
                             onClick={() => openEditModal(product)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            transition={{ duration: 0.3 }}
                           >
                             Edit
-                          </button>
-                          <button
+                          </motion.button>
+                          <motion.button
                             className="bg-red-500 text-white px-4 py-2 rounded"
                             onClick={() => openDeleteModal(product)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            transition={{ duration: 0.3 }}
                           >
                             Delete
-                          </button>
+                          </motion.button>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   );
                 })
               ) : (

@@ -1,54 +1,33 @@
 import { Helmet } from "react-helmet";
 import Layout from "./layouts/Layout";
 import Sidebar from "../components/Sidebar";
-import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 
 function Settings() {
-  const [isVisible, setIsVisible] = useState(false);
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-
-    return () => {
-      if (containerRef.current) {
-        observer.unobserve(containerRef.current);
-      }
-    };
-  }, []);
-
   return (
     <Layout>
       <Helmet>
         <title>Buyee | Settings</title>
       </Helmet>
-      <div
-        ref={containerRef}
-        className={`w-full h-[80vh] flex flex-col lg:flex-row items-center lg:items-start justify-center p-4 transition-all duration-700 ease-in-out transform m-2 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        }`}
+      <motion.div
+        className="w-full h-[80vh] flex flex-col lg:flex-row items-center lg:items-start justify-center p-4 m-2"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeInOut" }}
       >
         {/* Form Container */}
-        <div className="w-full h-[80%] lg:w-3/4 bg-white rounded-lg shadow-md p-6 mt-4 lg:mt-0 flex-grow lg:mr-4 flex items-center justify-center">
+        <motion.div
+          className="w-full h-[80%] lg:w-3/4 bg-white rounded-lg shadow-md p-6 mt-4 lg:mt-0 flex-grow lg:mr-4 flex items-center justify-center"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <h2 className="text-2xl font-bold text-gray-800">Settings</h2>
-        </div>
+        </motion.div>
+
         {/* Sidebar */}
         <Sidebar />
-      </div>
+      </motion.div>
     </Layout>
   );
 }

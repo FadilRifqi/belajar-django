@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import Card from "./Card";
-import PropTypes from "prop-types";
 import LoadingComponent from "./LoadingComponent";
 
 function CardList({ products, loading }) {

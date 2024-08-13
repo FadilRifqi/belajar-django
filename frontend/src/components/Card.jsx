@@ -1,41 +1,21 @@
-import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 import Button from "./Button";
 
+const variants = {
+  hidden: { opacity: 0, translateY: 20 },
+  visible: { opacity: 1, translateY: 0 },
+};
+
 function Card({ title, price, image }) {
-  const [isVisible, setIsVisible] = useState(false);
-  const cardRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible(true);
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
-    }
-
-    return () => {
-      if (cardRef.current) {
-        observer.unobserve(cardRef.current);
-      }
-    };
-  }, []);
-
   return (
-    <div
-      ref={cardRef}
-      className={`bg-white rounded-lg shadow-md overflow-hidden transition-all duration-700 ease-in-out transform flex flex-col ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
+      variants={variants}
+      transition={{ duration: 0.7, ease: "easeInOut" }}
+      className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col"
     >
       <div className="w-full sm:h-24 md:h-48 lg:h-64">
         <img
@@ -58,8 +38,14 @@ function Card({ title, price, image }) {
           Buy
         </Button>
       </div>
-    </div>
+    </motion.div>
   );
 }
+
+Card.propTypes = {
+  title: PropTypes.string.isRequired,
+  price: PropTypes.string.isRequired,
+  image: PropTypes.string,
+};
 
 export default Card;
