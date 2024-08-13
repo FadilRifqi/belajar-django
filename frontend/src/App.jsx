@@ -90,7 +90,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<NotFound />} />
+        <Route
+          path="*"
+          element={
+            <OpenRoute>
+              <NotFound />
+            </OpenRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

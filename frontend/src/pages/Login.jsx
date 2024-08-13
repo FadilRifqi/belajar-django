@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constant";
 import api from "../api";
 import LoadingComponent from "../components/LoadingComponent";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,7 +14,6 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
@@ -29,17 +30,15 @@ function Login() {
       localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
       navigate("/");
     } catch (error) {
+      let errorMessage = "An unexpected error occurred.";
       if (error.response && error.response.data) {
         if (error.response.data.non_field_errors) {
-          setError(error.response.data.non_field_errors[0]);
+          errorMessage = error.response.data.non_field_errors[0];
         } else if (error.response.data.detail) {
-          setError(error.response.data.detail);
-        } else {
-          setError("An unexpected error occurred.");
+          errorMessage = error.response.data.detail;
         }
-      } else {
-        setError("An unexpected error occurred.");
       }
+      toast.error(errorMessage);
       console.error(error.response.data);
     } finally {
       setLoading(false);
@@ -75,6 +74,7 @@ function Login() {
       <Helmet>
         <title>Buyee | Login</title>
       </Helmet>
+      <ToastContainer position="bottom-right" />
       <div className="flex justify-center items-center w-full h-[80vh]">
         <div
           ref={containerRef}
@@ -107,7 +107,7 @@ function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-              <div className={`${error ? "mb-2" : "mb-4"}`}>
+              <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="password"
@@ -124,9 +124,6 @@ function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              {error && (
-                <div className="text-center mb-4 text-red-600">{error}</div>
-              )}
               <div className="flex items-center justify-between">
                 <button
                   disabled={loading}

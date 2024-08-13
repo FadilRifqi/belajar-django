@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet";
 import Layout from "./layouts/Layout";
 import Sidebar from "../components/Sidebar";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constant";
@@ -15,9 +15,30 @@ function Profile() {
   const decodedToken = useContext(AuthContext);
   const { username, email, profile_picture } = decodedToken;
 
+  const [deleteImage, setDeleteImage] = useState(false);
+  const [previewImage, setPreviewImage] = useState(profile_picture); // State untuk pratinjau gambar
+
+  useEffect(() => {
+    async function toastShow() {
+      if (sessionStorage.getItem("profileUpdateSuccess") === "true") {
+        await toast.success("Profile updated successfully!");
+        sessionStorage.removeItem("profileUpdateSuccess");
+      }
+    }
+    toastShow();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+
+    const fileInput = document.getElementById("image");
+
+    if (!fileInput.files.length && deleteImage) {
+      formData.set("profile_picture", "");
+    } else if (!fileInput.files.length) {
+      formData.delete("profile_picture");
+    }
 
     try {
       const res = await api.patch("/api/user/edit/", formData);
@@ -27,9 +48,36 @@ function Profile() {
         localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
       }
 
-      toast.success("Profile updated successfully!");
+      sessionStorage.setItem("profileUpdateSuccess", "true");
+      window.location.reload();
     } catch (error) {
-      toast.error("Error updating profile: " + error.message);
+      console.log(error.response.data);
+      if (error.response.data.email) {
+        toast.error("Error updating profile: " + error.response.data.email[0]);
+      } else if (error.response.data.username) {
+        toast.error(
+          "Error updating profile: " + error.response.data.username[0]
+        );
+      } else if (error.response.data.profile_picture) {
+        toast.error(
+          "Error updating profile: " + error.response.data.profile_picture[0]
+        );
+      } else {
+        toast.error("Error updating profile ");
+      }
+    }
+  };
+
+  const handleDeleteImage = () => {
+    setDeleteImage(true);
+    setPreviewImage(null); // Hapus pratinjau gambar
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPreviewImage(URL.createObjectURL(file)); // Set pratinjau gambar baru
+      setDeleteImage(false); // Reset state hapus gambar
     }
   };
 
@@ -38,14 +86,13 @@ function Profile() {
       <Helmet>
         <title>Buyee | Profile</title>
       </Helmet>
-      <ToastContainer />
+      <ToastContainer position="bottom-right" />
       <motion.div
         className="w-full min-h-[80vh] flex flex-col lg:flex-row items-center lg:items-start justify-center p-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
-        {/* Form Container */}
         <motion.div
           className="w-full h-full lg:w-3/4 bg-white rounded-lg shadow-md p-6 mt-28 md:mt-0 lg:mt-0 flex-grow lg:mr-4 z-10"
           initial={{ opacity: 0, scale: 0.95 }}
@@ -102,8 +149,9 @@ function Profile() {
                 id="image"
                 name="profile_picture"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs custom-file-input"
+                onChange={handleImageChange} // Event handler untuk perubahan gambar
               />
-              {profile_picture && (
+              {previewImage && (
                 <motion.div
                   className="flex justify-center items-center mt-4"
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -111,14 +159,14 @@ function Profile() {
                   transition={{ duration: 0.5 }}
                 >
                   <img
-                    src={profile_picture}
+                    src={previewImage}
                     alt="Profile Preview"
                     className="w-32 h-32 object-cover rounded-full"
                   />
                   <button
                     type="button"
                     className="ml-4 h-9 w-9 bg-red-500 text-white rounded-full hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75"
-                    onClick={() => {}}
+                    onClick={handleDeleteImage}
                   >
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
@@ -149,7 +197,6 @@ function Profile() {
           </form>
         </motion.div>
 
-        {/* Sidebar */}
         <Sidebar />
       </motion.div>
     </Layout>

@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet";
 import Layout from "./layouts/Layout";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
 import LoadingComponent from "../components/LoadingComponent";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Register() {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,7 +14,6 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -28,11 +29,11 @@ function Register() {
     } catch (error) {
       if (error.response && error.response.data) {
         if (error.response.data.email) {
-          setError(error.response.data.email[0]);
+          toast.error(error.response.data.email[0]);
         } else if (error.response.data.username) {
-          setError(error.response.data.username[0]);
+          toast.error(error.response.data.username[0]);
         } else {
-          setError("An unexpected error occurred.");
+          toast.error("An unexpected error occurred.");
         }
       }
     } finally {
@@ -81,6 +82,7 @@ function Register() {
       <Helmet>
         <title>Buyee | Register</title>
       </Helmet>
+      <ToastContainer position="bottom-right" />
       <div className="flex justify-center items-center w-full h-[80vh]">
         <div
           ref={containerRef}

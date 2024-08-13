@@ -366,7 +366,7 @@ function Dashboard() {
           handleDelete={handleDelete}
         />
       </div>
-      <ToastContainer />
+      <ToastContainer position="bottom-right" />
     </Layout>
   );
 }
