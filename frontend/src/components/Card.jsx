@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import Button from "./Button";
 
-function Card({ title, content, price, image }) {
+function Card({ title, price, image }) {
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef(null);
 
@@ -50,7 +50,7 @@ function Card({ title, content, price, image }) {
         </p>
         <hr className="border-gray-300 sm:my-3 md:my-4 lg:my-6" />
         <p className="text-gray-600 text-xs text-center">
-          {content} <span className="font-medium">Rp. {price}</span>
+          <span className="font-medium">Rp. {price}</span>
         </p>
       </div>
       <div className="mt-auto px-1 pb-1 sm:p-3 md:p-4 lg:p-6">
@@ -61,11 +61,5 @@ function Card({ title, content, price, image }) {
     </div>
   );
 }
-
-Card.propTypes = {
-  title: PropTypes.string.isRequired,
-  content: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
-};
 
 export default Card;

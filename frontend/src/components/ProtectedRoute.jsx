@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import api from "../api";
 import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constant";
 import LoadingComponent from "./LoadingComponent";
-import AuthContext from "./AuthContext"; 
+import AuthContext from "./AuthContext";
 
 function ProtectedRoute({ children }) {
   const [isAuthorized, setIsAuthorized] = React.useState(null);
@@ -42,8 +42,10 @@ function ProtectedRoute({ children }) {
     const decoded = jwtDecode(token);
     setDecodedToken(decoded); // Set the decoded token
 
-    const tokenExpiration = decoded.exp * 1000;
-    const now = Date.now();
+    const tokenExpiration = decoded.exp;
+    const now = Date.now() / 1000;
+
+    console.log(tokenExpiration, now);
 
     if (tokenExpiration < now) {
       await refreshToken();

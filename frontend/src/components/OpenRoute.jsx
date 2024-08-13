@@ -42,8 +42,8 @@ function OpenRoute({ children }) {
     const decoded = jwtDecode(token);
     setDecodedToken(decoded); // Set the decoded token
 
-    const tokenExpiration = decoded.exp * 1000;
-    const now = Date.now();
+    const tokenExpiration = decoded.exp;
+    const now = Date.now() / 1000;
 
     if (tokenExpiration < now) {
       await refreshToken();
