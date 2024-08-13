@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from rest_framework import generics,status
-from .serializers import UserSerializer, MessageSerializer,ProductSerializer, LoginSerializer
+from .serializers import UserSerializer, MessageSerializer,ProductSerializer, LoginSerializer, CustomTokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.exceptions import PermissionDenied
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Message , Product, CustomUser
 from django.db.models import Q
 from rest_framework.response import Response
@@ -11,6 +13,54 @@ class CreateUserView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
+
+class EditUserView(generics.UpdateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        # Call the parent class's update method to handle the update
+        response = super().update(request, *args, **kwargs)
+
+        # After updating the user, generate a new JWT with custom payload
+        user = self.get_object()
+
+        # Check if profile_picture is set to null in the request data
+        if request.data.get('profile_picture') is None:
+            user.profile_picture.delete()
+            user.profile_picture = None
+            user.save()
+
+        refresh = RefreshToken.for_user(user)
+        
+        # Custom payload
+        refresh['email'] = user.email
+        refresh['username'] = user.username
+        if user.profile_picture:
+            profile_picture_url = request.build_absolute_uri(user.profile_picture.url)
+        else:
+            profile_picture_url = None
+        refresh['profile_picture'] = profile_picture_url
+        access_token = refresh.access_token
+
+        # Return the new tokens along with the original response data
+        response.data['refresh'] = str(refresh)
+        response.data['access'] = str(access_token)
+        response.data['message'] = 'User information updated successfully'
+
+        return response 
+    
+class DeleteUserView(generics.DestroyAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
 
 class CreateMessageView(generics.CreateAPIView):
     serializer_class = MessageSerializer
@@ -62,6 +112,15 @@ class DeleteProductView(generics.DestroyAPIView):
     def get_queryset(self):
         user = self.request.user
         return Product.objects.filter(owner=user)
+    
+class ProductUpdateView(generics.UpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Product.objects.filter(owner=user)
 
 class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
@@ -78,12 +137,20 @@ class AllProductListView(generics.ListAPIView):
     def get_queryset(self):
         return Product.objects.all()
     
-class LoginView(generics.views.APIView):
+class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)  # Validate the data
-        tokens = serializer.create(serializer.validated_data)  # Create tokens using validated data
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        
+        # Pass the request context to the token serializer
+        CustomTokenObtainPairSerializer.context = {'request': request}
+        refresh = CustomTokenObtainPairSerializer.get_token(user)
+        tokens = {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
         return Response(tokens, status=status.HTTP_200_OK)
