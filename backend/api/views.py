@@ -23,17 +23,11 @@ class EditUserView(generics.UpdateAPIView):
         return self.request.user
 
     def update(self, request, *args, **kwargs):
-        # Call the parent class's update method to handle the update
-        response = super().update(request, *args, **kwargs)
-
-        # After updating the user, generate a new JWT with custom payload
+        # Simpan referensi ke user sebelum update
         user = self.get_object()
 
-        # Check if profile_picture is set to null in the request data
-        if request.data.get('profile_picture') is None:
-            user.profile_picture.delete()
-            user.profile_picture = None
-            user.save()
+        # Panggil metode update parent untuk menangani update
+        response = super().update(request, *args, **kwargs)
 
         refresh = RefreshToken.for_user(user)
         
