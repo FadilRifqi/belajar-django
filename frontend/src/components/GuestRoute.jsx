@@ -39,8 +39,8 @@ function GuestRoute({ children }) {
       return;
     }
     const decoded = jwtDecode(token);
-    const tokenExpiration = decoded.exp;
-    const now = Date.now() / 1000;
+    const tokenExpiration = decoded.exp * 1000;
+    const now = Date.now();
 
     if (tokenExpiration < now) {
       await refreshToken();
