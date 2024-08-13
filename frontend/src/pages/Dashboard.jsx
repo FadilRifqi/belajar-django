@@ -287,7 +287,7 @@ function Dashboard() {
               {products.length > 0 ? (
                 products.map((product, key) => {
                   return (
-                    <div className="max-w-sm min-h-[20rem] rounded overflow-hidden shadow-lg flex flex-col">
+                    <div className="w-full min-h-[20rem] rounded overflow-hidden shadow-lg flex flex-col">
                       <img
                         className="w-full max-h-[10rem] object-fill"
                         src={product.image}
