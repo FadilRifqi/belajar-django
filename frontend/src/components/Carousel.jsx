@@ -58,28 +58,28 @@ function Carousel() {
           <img
             src={carousel1}
             alt="Slide 1"
-            className="w-full md:h-96 h-[20vh] object-fill md:object-cover"
+            className="w-full md:h-96 h-[20vh] object-fill"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
             src={carousel2}
             alt="Slide 2"
-            className="w-full md:h-96 h-[20vh] object-fill md:object-cover"
+            className="w-full md:h-96 h-[20vh] object-fill"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
             src={carousel3}
             alt="Slide 3"
-            className="w-full md:h-96 h-[20vh] object-fill md:object-cover"
+            className="w-full md:h-96 h-[20vh] object-fill"
           />
         </SwiperSlide>
         <SwiperSlide>
           <img
             src={carousel4}
             alt="Slide 4"
-            className="w-full h-[20vh] md:h-96 object-fill md:object-cover"
+            className="w-full h-[20vh] md:h-96 object-fill"
           />
         </SwiperSlide>
       </Swiper>
