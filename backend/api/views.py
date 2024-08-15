@@ -199,6 +199,7 @@ class AddToCartView(generics.CreateAPIView):
 
     def post(self, request, pk):
         user = request.user
+        quantity = int(request.query_params.get('quantity', 1))
         
         # Get product and cart, handle exceptions if they do not exist
         try:
@@ -218,10 +219,52 @@ class AddToCartView(generics.CreateAPIView):
             cart_item, created = CartItem.objects.get_or_create(product=product, cart=cart)
             if not created:
                 # If the item already exists, increase its quantity
-                cart_item.quantity += 1
+                cart_item.quantity += quantity
+                cart_item.save()
+            else:
+                cart_item.quantity = quantity
                 cart_item.save()
 
         return Response({'message': 'Product added to cart successfully'}, status=status.HTTP_200_OK)
+class RemoveFromCartView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        user = request.user
+        quantity = int(request.query_params.get('quantity', 1))
+
+        # Get product and cart, handle exceptions if they do not exist
+        try:
+            product = Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            return Response({'message': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if product.owner == user:
+            return Response({'message': 'You cannot remove your own product from the cart'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Use atomic transaction to ensure the operations are done atomically
+        with transaction.atomic():
+            # Get the cart for the user
+            try:
+                cart = Cart.objects.get(user=user)
+            except Cart.DoesNotExist:
+                return Response({'message': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Try to get an existing CartItem, if it does not exist, return an error
+            try:
+                cart_item = CartItem.objects.get(product=product, cart=cart)
+            except CartItem.DoesNotExist:
+                return Response({'message': 'Product not found in cart'}, status=status.HTTP_404_NOT_FOUND)
+
+            # If the item exists, decrease its quantity
+            if cart_item.quantity > quantity:
+                cart_item.quantity -= quantity
+                cart_item.save()
+            else:
+                cart_item.delete()
+
+        return Response({'message': 'Product removed from cart successfully'}, status=status.HTTP_200_OK)
+
 class CreateOrderView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
