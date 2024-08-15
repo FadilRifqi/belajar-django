@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Message,Product,CustomUser
+from .models import Message,Product,CustomUser,Order
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -90,3 +90,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['profile_picture'] = profile_picture_url
 
         return token
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'items', 'total_price','payment_status','payment_amount','payment_date','transaction_id', 'payment_method', 'created_at']
+        extra_kwargs = {'user': {'read_only': True}}

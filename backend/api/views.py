@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from rest_framework import generics,status
-from .serializers import UserSerializer, MessageSerializer,ProductSerializer, LoginSerializer, CustomTokenObtainPairSerializer
+from .serializers import UserSerializer, MessageSerializer,ProductSerializer, LoginSerializer, CustomTokenObtainPairSerializer, OrderSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Message , Product, CustomUser,Cart,CartItem
+from .models import Message , Product, CustomUser,Cart,CartItem,Order
 from django.db import transaction
 from django.db.models import Q
 from rest_framework.response import Response
@@ -222,3 +222,35 @@ class AddToCartView(generics.CreateAPIView):
                 cart_item.save()
 
         return Response({'message': 'Product added to cart successfully'}, status=status.HTTP_200_OK)
+class CreateOrderView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        
+        try:
+            cart = Cart.objects.get(user=user)
+        except Cart.DoesNotExist:
+            return Response({'message': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get all items in the cart
+        cart_items = cart.items.all()
+        if not cart_items:
+            return Response({'message':'Cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
+
+        total = sum(item.product.price * item.quantity for item in cart_items)
+        with transaction.atomic():
+            order = Order.objects.create(user=user, total_price=total)
+            order.items.set(cart_items.all())
+            order.save()
+
+            cart.items.all().delete()
+
+        return Response({'message': 'Order created successfully'}, status=status.HTTP_200_OK)
+class OrderListView(generics.ListAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Order.objects.filter(user=user)
