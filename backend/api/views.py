@@ -181,6 +181,7 @@ class UserCartView(generics.GenericAPIView):
         # Serialize cart items
         cart_items_data = [
             {
+                'id': item.product.id,
                 'product': item.product.name,
                 'quantity': item.quantity,
                 'price': item.product.price,
@@ -270,24 +271,29 @@ class CreateOrderView(generics.CreateAPIView):
 
     def post(self, request):
         user = request.user
-        
+        cart_item_ids = request.data.get('cart_item_ids', [])
+
+        if not cart_item_ids:
+            return Response({'message': 'No cart items selected'}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             cart = Cart.objects.get(user=user)
         except Cart.DoesNotExist:
             return Response({'message': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Get all items in the cart
-        cart_items = cart.items.all()
-        if not cart_items:
-            return Response({'message':'Cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
+        # Get selected items in the cart
+        cart_items = CartItem.objects.filter(product__id__in=cart_item_ids, cart=cart)
+        if not cart_items.exists():
+            return Response({'message': 'Selected cart items not found'}, status=status.HTTP_400_BAD_REQUEST)
 
         total = sum(item.product.price * item.quantity for item in cart_items)
         with transaction.atomic():
             order = Order.objects.create(user=user, total_price=total)
-            order.items.set(cart_items.all())
+            order.items.set(cart_items)
             order.save()
 
-            cart.items.all().delete()
+            # Remove selected items from the cart
+            cart_items.delete()
 
         return Response({'message': 'Order created successfully'}, status=status.HTTP_200_OK)
 class OrderListView(generics.ListAPIView):
