@@ -14,7 +14,7 @@ function Home() {
       setLoading(true);
       try {
         const res = await axios.get(
-          import.meta.env.VITE_API_URL + "/api/products/list/all/"
+          import.meta.env.VITE_API_URL + "/products/list/all/"
         );
         setProducts(res.data.results);
       } catch (error) {

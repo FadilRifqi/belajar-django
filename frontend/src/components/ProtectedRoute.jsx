@@ -12,23 +12,30 @@ function ProtectedRoute({ children }) {
 
   React.useEffect(() => {
     auth().catch((error) => {
+      localStorage.removeItem(ACCESS_TOKEN);
+      localStorage.removeItem(REFRESH_TOKEN);
       setIsAuthorized(false);
+      console.error(error);
     });
   }, []);
 
   const refreshToken = async () => {
     const refreshToken = localStorage.getItem(REFRESH_TOKEN);
     try {
-      const res = await api.post("/api/token/refresh/", {
+      const res = await api.post("/token/refresh/", {
         refresh: refreshToken,
       });
       if (res.status === 200) {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
         setIsAuthorized(true);
       } else {
+        localStorage.removeItem(ACCESS_TOKEN);
+        localStorage.removeItem(REFRESH_TOKEN);
         setIsAuthorized(false);
       }
     } catch (error) {
+      localStorage.removeItem(ACCESS_TOKEN);
+      localStorage.removeItem(REFRESH_TOKEN);
       setIsAuthorized(false);
     }
   };
@@ -44,11 +51,6 @@ function ProtectedRoute({ children }) {
 
     const tokenExpiration = decoded.exp * 1000;
     const now = Date.now();
-
-    console.log(
-      `Token Expiration: ${new Date(tokenExpiration).toLocaleString()}`,
-      `Current Time: ${new Date(now).toLocaleString()}`
-    );
 
     if (tokenExpiration < now) {
       await refreshToken();

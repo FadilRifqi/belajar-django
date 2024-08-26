@@ -83,6 +83,7 @@ class Message(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=100,default="General")
+    description = models.TextField(max_length=500,default="description")
     price = models.DecimalField(max_digits=10, decimal_places=2)
     owner = models.ForeignKey(CustomUser, related_name='products', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
@@ -90,6 +91,16 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+# Variant db model
+class Variant(models.Model):
+    product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.name} of {self.product.name}"
+# Cart db model
 class Cart(models.Model):
     user = models.ForeignKey(CustomUser, related_name='carts', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -97,6 +108,7 @@ class Cart(models.Model):
 
     def __str__(self):
         return f"Cart of {self.user.username}"
+# CartItem db model
 class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product')
     quantity = models.PositiveIntegerField(default=1)
@@ -106,6 +118,7 @@ class CartItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} in {self.cart.user.username}'s cart"
+# Order db model
 class Order(models.Model):
     user = models.ForeignKey(CustomUser, related_name='orders', on_delete=models.CASCADE)
     items = models.ManyToManyField(CartItem, related_name='orders')
@@ -120,6 +133,7 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order of {self.user.username} for {self.total_price}"
+# ProductReview db model
 class ProductReview(models.Model):
     product = models.ForeignKey(Product, related_name='reviews', on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, related_name='reviews', on_delete=models.CASCADE)

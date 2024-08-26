@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Message,Product,CustomUser,Order
+from .models import Message,Product,CustomUser,Order,Variant
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -37,10 +37,17 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = ['id', 'sender', 'receiver', 'message', 'file', 'timestamp']
         extra_kwargs = {'sender': {'read_only': True}}
 
+class VariantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Variant
+        fields = ['id', 'name', 'price', 'stock']
+
 class ProductSerializer(serializers.ModelSerializer):
+    variants = VariantSerializer(many=True, read_only=True)
+
     class Meta:
         model = Product
-        fields = ['id', 'name', 'category', 'price', 'owner', 'image', 'timestamp']
+        fields = ['id', 'name', 'category','description', 'price', 'owner', 'image', 'timestamp','variants']
         extra_kwargs = {'owner': {'read_only': True}}       
 
 class LoginSerializer(serializers.Serializer):

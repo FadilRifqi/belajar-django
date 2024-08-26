@@ -22,7 +22,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const res = await api.post("/api/token/", {
+      const res = await api.post("/token/", {
         email,
         password,
       });

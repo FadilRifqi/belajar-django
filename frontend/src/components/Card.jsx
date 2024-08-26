@@ -1,21 +1,38 @@
 import { motion } from "framer-motion";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 
 const variants = {
   hidden: { opacity: 0, translateY: 20 },
   visible: { opacity: 1, translateY: 0 },
+  hover: {
+    scale: 1.05,
+    transition: { duration: 0.2 },
+  },
+  click: {
+    scale: 0.95,
+    transition: { duration: 0.1 },
+  },
 };
 
-function Card({ title, price, image }) {
+function Card({ title, price, image, id }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/product/${id}`);
+  };
+
   return (
     <motion.div
       initial="hidden"
       whileInView="visible"
+      whileHover="hover"
+      whileTap="click"
+      onClick={handleClick}
       viewport={{ once: true, amount: 0.1 }}
       variants={variants}
-      transition={{ duration: 0.7, ease: "easeInOut" }}
-      className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col"
+      className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col hover:cursor-pointer"
     >
       <div className="w-full sm:h-24 md:h-48 lg:h-64">
         <img
@@ -33,11 +50,6 @@ function Card({ title, price, image }) {
           <span className="font-medium">Rp. {price}</span>
         </p>
       </div>
-      <div className="mt-auto px-1 pb-1 sm:p-3 md:p-4 lg:p-6">
-        <Button className="w-full" onClick={() => alert("Buy")}>
-          Buy
-        </Button>
-      </div>
     </motion.div>
   );
 }
@@ -46,6 +58,7 @@ Card.propTypes = {
   title: PropTypes.string.isRequired,
   price: PropTypes.string.isRequired,
   image: PropTypes.string,
+  id: PropTypes.string.isRequired,
 };
 
 export default Card;

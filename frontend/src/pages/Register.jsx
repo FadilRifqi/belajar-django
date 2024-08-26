@@ -20,7 +20,7 @@ function Register() {
     setLoading(true);
     e.preventDefault();
     try {
-      await api.post("/api/user/register/", {
+      await api.post("/user/register/", {
         username,
         email,
         password,

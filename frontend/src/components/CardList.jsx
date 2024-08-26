@@ -30,7 +30,7 @@ function CardList({ products, loading }) {
         }
       },
       {
-        threshold: 0.1, // Trigger when 10% of the section is in view
+        threshold: 0.1,
       }
     );
 
@@ -101,6 +101,7 @@ function CardList({ products, loading }) {
             products.map((card) => (
               <Card
                 image={card.image}
+                id={card.id}
                 key={card.id}
                 title={card.name}
                 content={card.description}

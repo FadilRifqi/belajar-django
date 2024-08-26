@@ -72,7 +72,7 @@ function Dashboard() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await api.get("/api/products/list/");
+        const res = await api.get("/products/list/");
         setProducts(res.data.results);
         console.log("Products: ", res.data.results);
       } catch (error) {
@@ -118,7 +118,7 @@ function Dashboard() {
     }
     e.preventDefault();
     try {
-      await api.post("/api/products/", formData);
+      await api.post("/products/", formData);
       toast.success("Product created successfully!");
       setCreateModalIsOpen(false);
     } catch (error) {
@@ -139,7 +139,7 @@ function Dashboard() {
       formData.append("image", selectedImage);
     }
     try {
-      await api.patch(`/api/products/edit/${id}/`, formData);
+      await api.patch(`/products/edit/${id}/`, formData);
       toast.success("Product updated successfully!");
       setEditModalIsOpen(false);
     } catch (error) {
@@ -154,7 +154,7 @@ function Dashboard() {
     setLoading(true);
     e.preventDefault();
     try {
-      await api.delete(`/api/products/delete/${id}/`);
+      await api.delete(`/products/delete/${id}/`);
       toast.success("Product deleted successfully!");
       setDeleteModalIsOpen(false);
     } catch (error) {

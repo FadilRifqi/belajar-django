@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import GuestRoute from "./components/GuestRoute";
 import OpenRoute from "./components/OpenRoute";
+import Product from "./pages/Product/Page";
 
 function Logout() {
   localStorage.clear();
@@ -58,6 +59,7 @@ function App() {
             </OpenRoute>
           }
         />
+        <Route path="/product/:id" element={<Product />} />
         <Route
           path="/dashboard"
           element={

@@ -107,6 +107,12 @@ class CreateProductView(generics.CreateAPIView):
             serializer.save(owner=self.request.user)
         else:
             print(serializer.errors)
+class ProductDetailView(generics.RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+
+    
 class DeleteProductView(generics.DestroyAPIView):
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]

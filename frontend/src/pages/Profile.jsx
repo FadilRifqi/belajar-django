@@ -41,7 +41,7 @@ function Profile() {
     }
 
     try {
-      const res = await api.patch("/api/user/edit/", formData);
+      const res = await api.patch("/user/edit/", formData);
 
       if (res.data.access && res.data.refresh) {
         localStorage.setItem(ACCESS_TOKEN, res.data.access);
