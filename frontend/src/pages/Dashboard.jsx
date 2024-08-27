@@ -44,6 +44,8 @@ Modal.setAppElement("#root");
 function Dashboard() {
   const barChartRef = useRef(null);
   const [products, setProducts] = useState([]);
+  const [variantName, setVariantName] = useState("");
+  const [variantPrice, setVariantPrice] = useState(0);
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState(0);
@@ -346,7 +348,6 @@ function Dashboard() {
           createModal={createModal}
           name={name}
           category={category}
-          price={price}
         />
         <EditModals
           editModalisOpen={editModalIsOpen}

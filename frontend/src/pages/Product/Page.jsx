@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import api from "../../api";
 import Layout from "../layouts/Layout";
 import LoadingComponent from "../../components/LoadingComponent";
+import InternalServerError from "../Error/InternalServerError/Page";
 
 function Product() {
   const { id } = useParams();
@@ -30,7 +31,7 @@ function Product() {
         <LoadingComponent />
       </Layout>
     );
-  if (error) return <Layout>Error: {error.detail}</Layout>;
+  if (error) return <InternalServerError error={error} />;
 
   const dummyImage =
     "https://via.placeholder.com/400x300?text=No+Image+Available";

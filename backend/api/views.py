@@ -153,6 +153,15 @@ class AllProductListView(generics.ListAPIView):
     def get_queryset(self):
         return Product.objects.all()
     
+class GetRandomProductView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.order_by('?')
+    permission_classes = [AllowAny]
+    pagination_class = ProductPagination
+
+    def get_queryset(self):
+        return Product.objects.all()
+    
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]

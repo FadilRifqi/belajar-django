@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import Layout from "./layouts/Layout";
 import Card from "../components/Card";
-import { cardData } from "../api/dummy.js";
+import { useEffect, useState } from "react";
+import api from "../api.js";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 10 },
@@ -9,6 +10,21 @@ const fadeInUp = {
 };
 
 function Cart() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        let res = await api.get("/products/random/");
+        console.log(res.data.results);
+        setProducts(res.data.results);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   return (
     <Layout>
       <motion.div
@@ -57,12 +73,14 @@ function Cart() {
                 Rekomendasi untukmu
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-                {cardData.map((card) => (
+                {products.map((card) => (
                   <Card
+                    image={card.image}
+                    id={card.id}
                     key={card.id}
-                    title={card.title}
-                    content={card.content}
-                    price={card.price}
+                    title={card.name}
+                    content={card.description}
+                    price={card.variants[0]?.price || 0}
                   />
                 ))}
               </div>

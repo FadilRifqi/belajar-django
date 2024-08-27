@@ -1,12 +1,12 @@
-import { Helmet } from "react-helmet";
-import Layout from "./layouts/Layout";
 import { motion } from "framer-motion";
+import { Helmet } from "react-helmet";
+import Layout from "../../layouts/Layout";
 
-function NotFound() {
+const InternalServerError = ({ error }) => {
   return (
     <Layout>
       <Helmet>
-        <title>Buyee | 404</title>
+        <title>Buyee | {error.response.status.toString()}</title>
       </Helmet>
       <div className="flex justify-center items-center w-full h-[80vh]">
         <motion.h1
@@ -15,11 +15,13 @@ function NotFound() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeInOut" }}
         >
-          404 Not Found
+          {error.response.status == 404
+            ? "404 Not Found"
+            : "500 Internal Server Error"}
         </motion.h1>
       </div>
     </Layout>
   );
-}
+};
 
-export default NotFound;
+export default InternalServerError;

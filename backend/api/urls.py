@@ -6,6 +6,7 @@ urlpatterns = [
     path('messages/list/', views.MessageListView.as_view(), name='list_message'),
     path('messages/delete/<int:pk>/', views.MessageDeleteView.as_view(), name='delete_message'),
     path('products/', views.CreateProductView.as_view(), name='create_product'),
+    path('products/random/', views.GetRandomProductView.as_view(), name='random_product'),
     path('products/<int:pk>/', views.ProductDetailView.as_view(), name='detail_product'),
     path('products/delete/<int:pk>/', views.DeleteProductView.as_view(), name='delete_product'),
     path('products/list/', views.ProductListView.as_view(), name='list_product'),

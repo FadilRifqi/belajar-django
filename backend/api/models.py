@@ -84,7 +84,6 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     category = models.CharField(max_length=100,default="General")
     description = models.TextField(max_length=500,default="description")
-    price = models.DecimalField(max_digits=10, decimal_places=2)
     owner = models.ForeignKey(CustomUser, related_name='products', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)

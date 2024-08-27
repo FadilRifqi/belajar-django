@@ -27,11 +27,15 @@ function Register() {
       });
       navigate("/login");
     } catch (error) {
+      console.log(error);
+
       if (error.response && error.response.data) {
         if (error.response.data.email) {
           toast.error(error.response.data.email[0]);
         } else if (error.response.data.username) {
           toast.error(error.response.data.username[0]);
+        } else if (error.response.data.password) {
+          toast.error(error.response.data.password[0]);
         } else {
           toast.error("An unexpected error occurred.");
         }

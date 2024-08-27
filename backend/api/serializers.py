@@ -47,7 +47,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'category','description', 'price', 'owner', 'image', 'timestamp','variants']
+        fields = ['id', 'name', 'category','description', 'owner', 'image', 'timestamp','variants']
         extra_kwargs = {'owner': {'read_only': True}}       
 
 class LoginSerializer(serializers.Serializer):
