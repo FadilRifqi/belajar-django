@@ -130,15 +130,9 @@ class ProductUpdateView(generics.UpdateAPIView):
         user = self.request.user
         return Product.objects.filter(owner=user)
 
-    
-class ProductPagination(PageNumberPagination):
-    page_size = 10  # Number of products per page
-    page_size_query_param = 'page_size'
-    max_page_size = 100
 class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
-    pagination_class = ProductPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -148,20 +142,6 @@ class AllProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.order_by('?')
     permission_classes = [AllowAny]
-    pagination_class = ProductPagination
-
-    def get_queryset(self):
-        return Product.objects.all()
-    
-class GetRandomProductView(generics.ListAPIView):
-    serializer_class = ProductSerializer
-    queryset = Product.objects.order_by('?')
-    permission_classes = [AllowAny]
-    pagination_class = ProductPagination
-
-    def get_queryset(self):
-        return Product.objects.all()
-    
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = [AllowAny]

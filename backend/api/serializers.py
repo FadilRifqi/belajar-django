@@ -3,7 +3,7 @@ from .models import Message,Product,CustomUser,Order,Variant
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+import json
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,12 +43,23 @@ class VariantSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'price', 'stock']
 
 class ProductSerializer(serializers.ModelSerializer):
-    variants = VariantSerializer(many=True, read_only=True)
+    variants = VariantSerializer(many=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'category','description', 'owner', 'image', 'timestamp','variants']
-        extra_kwargs = {'owner': {'read_only': True}}       
+        fields = ['id', 'name', 'category', 'description', 'owner', 'image', 'timestamp', 'variants']
+        extra_kwargs = {'owner': {'read_only': True}}
+
+    def create(self, validated_data):
+        variants_data = validated_data.pop('variants', [])
+
+        if isinstance(variants_data, str):
+            variants_data = json.loads(variants_data)
+            
+        product = Product.objects.create(**validated_data)
+        for variant_data in variants_data:
+            Variant.objects.create(product=product, **variant_data)
+        return product
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
