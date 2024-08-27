@@ -105,7 +105,7 @@ function CardList({ products, loading }) {
                 key={card.id}
                 title={card.name}
                 content={card.description}
-                price={card.price}
+                price={card.variants[0]?.price || 0}
               />
             ))
           ) : (

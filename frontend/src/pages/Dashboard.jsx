@@ -44,18 +44,39 @@ Modal.setAppElement("#root");
 function Dashboard() {
   const barChartRef = useRef(null);
   const [products, setProducts] = useState([]);
-  const [variantName, setVariantName] = useState("");
-  const [variantPrice, setVariantPrice] = useState(0);
+  const [variants, setVariants] = useState([
+    { name: "", price: "", image: null, stock: "" },
+  ]);
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [id, setId] = useState(null);
-
   const [createModal, setCreateModalIsOpen] = useState(false);
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
   const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
+
+  const handleVariantChange = (index, event) => {
+    const { name, value, files } = event.target;
+    const newVariants = [...variants];
+    if (name === "image") {
+      newVariants[index][name] = files[0];
+    } else {
+      newVariants[index][name] = value;
+    }
+    setVariants(newVariants);
+  };
+
+  const addVariant = () => {
+    setVariants([...variants, { name: "", price: "", image: null, stock: "" }]);
+  };
+
+  const removeVariant = (index) => {
+    const newVariants = variants.filter((_, i) => i !== index);
+    setVariants(newVariants);
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -69,6 +90,9 @@ function Dashboard() {
   };
   const handlePrice = (e) => {
     setPrice(e.target.value);
+  };
+  const handleDescription = (e) => {
+    setDescription(e.target.value);
   };
 
   useEffect(() => {
@@ -87,7 +111,9 @@ function Dashboard() {
   const openCreateModal = () => {
     setName("");
     setCategory("");
+    setDescription("");
     setPrice(0);
+    setVariants([{ name: "", price: "", image: null, stock: "" }]);
     setCreateModalIsOpen(true);
   };
   const closeCreateModal = () => setCreateModalIsOpen(false);
@@ -110,20 +136,34 @@ function Dashboard() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("category", category);
-    formData.append("price", price);
+    const productData = {
+      name,
+      category,
+      description,
+      variants,
+    };
 
-    if (selectedImage) {
-      formData.append("image", selectedImage); // Append the file to FormData
-    }
-    e.preventDefault();
     try {
-      await api.post("/products/", formData);
+      const res = await api.post("/products/", productData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (selectedImage) {
+        const formData = new FormData();
+        formData.append("image", selectedImage);
+        await api.patch(`/products/edit/${res.data.id}/`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
+
       toast.success("Product created successfully!");
       setCreateModalIsOpen(false);
     } catch (error) {
+      console.error("Error creating product: ", error);
       toast.error("Error creating Product: " + error.message);
     } finally {
       setLoading(false);
@@ -133,15 +173,31 @@ function Dashboard() {
   const handleEdit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("category", category);
-    formData.append("price", price);
-    if (selectedImage) {
-      formData.append("image", selectedImage);
-    }
+    const productData = {
+      name,
+      category,
+      price,
+      description,
+      variants,
+    };
+
     try {
-      await api.patch(`/products/edit/${id}/`, formData);
+      await api.patch(`/products/edit/${id}/`, productData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (selectedImage) {
+        const formData = new FormData();
+        formData.append("image", selectedImage);
+        await api.patch(`/products/upload-image/${id}/`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
+
       toast.success("Product updated successfully!");
       setEditModalIsOpen(false);
     } catch (error) {
@@ -161,7 +217,6 @@ function Dashboard() {
       setDeleteModalIsOpen(false);
     } catch (error) {
       console.log("Error: ", error);
-
       toast.error("Error deleting product: ", error.message);
     } finally {
       setLoading(false);
@@ -346,7 +401,14 @@ function Dashboard() {
           handlePrice={handlePrice}
           closeModal={closeCreateModal}
           createModal={createModal}
+          variants={variants}
+          setVariants={setVariants}
+          handleDescription={handleDescription}
+          handleVariantChange={handleVariantChange}
+          addVariant={addVariant}
+          removeVariant={removeVariant}
           name={name}
+          description={description}
           category={category}
         />
         <EditModals

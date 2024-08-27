@@ -15,7 +15,7 @@ function Cart() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        let res = await api.get("/products/random/");
+        let res = await api.get("/products/list/all/");
         console.log(res.data.results);
         setProducts(res.data.results);
       } catch (error) {

@@ -8,32 +8,16 @@ export function CreateModals({
   handleName,
   handleCategory,
   name,
+  variants,
+  setVariants,
+  handleFileChange,
+  handleVariantChange,
+  addVariant,
+  removeVariant,
   category,
+  description,
+  handleDescription,
 }) {
-  const [variants, setVariants] = useState([
-    { name: "", price: "", image: null, stock: "" },
-  ]);
-
-  const handleVariantChange = (index, event) => {
-    const { name, value, files } = event.target;
-    const newVariants = [...variants];
-    if (name === "image") {
-      newVariants[index][name] = files[0];
-    } else {
-      newVariants[index][name] = value;
-    }
-    setVariants(newVariants);
-  };
-
-  const addVariant = () => {
-    setVariants([...variants, { name: "", price: "", image: null, stock: "" }]);
-  };
-
-  const removeVariant = (index) => {
-    const newVariants = variants.filter((_, i) => i !== index);
-    setVariants(newVariants);
-  };
-
   return (
     <Modal
       isOpen={createModal}
@@ -74,6 +58,22 @@ export function CreateModals({
             name="category"
             value={category}
             onChange={handleCategory}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
+        <div className="mb-4">
+          <label
+            className="block text-gray-700 text-sm font-bold mb-2"
+            htmlFor="category"
+          >
+            Description
+          </label>
+          <input
+            type="text"
+            id="description"
+            name="description"
+            value={description}
+            onChange={handleDescription}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
@@ -131,7 +131,7 @@ export function CreateModals({
               type="file"
               id={`variantImage-${index}`}
               name="image"
-              onChange={(e) => handleVariantChange(index, e)}
+              onChange={handleFileChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               accept="image/*"
             />
