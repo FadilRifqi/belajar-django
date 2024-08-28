@@ -37,7 +37,7 @@ function Card({ title, price, image, id }) {
         <img
           src={image ? image : "https://via.placeholder.com/150"}
           alt="placeholder"
-          className="w-full max-h-full object-fill"
+          className="w-full max-h-full object-content"
         />
       </div>
       <div className="sm:p-3 md:p-4 lg:p-6 flex-grow">

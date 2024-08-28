@@ -67,8 +67,7 @@ export function CreateModals({
           >
             Description
           </label>
-          <input
-            type="text"
+          <textarea
             id="description"
             name="description"
             value={description}
@@ -307,6 +306,89 @@ export function DeleteModals({ modalIsOpen, closeModal, handleDelete }) {
           className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-300"
         >
           Cancel
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+export function AddProductCartModal({
+  modalIsOpen,
+  closeModal,
+  product,
+  selectedVariant,
+  handleVariantChange,
+  quantity,
+  handleQuantityChange,
+  handleAddToCart,
+}) {
+  return (
+    <Modal
+      isOpen={modalIsOpen}
+      onRequestClose={closeModal}
+      className="bg-white p-6 rounded-lg shadow-lg min-w-1/3 md:w-1/3 mx-auto"
+      overlayClassName="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center"
+    >
+      <h2 className="text-2xl font-bold mb-4">{product.name}</h2>
+      <div className="mb-4">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="variant"
+        >
+          Select Variant
+        </label>
+        <select
+          id="variant"
+          value={product.variants.indexOf(selectedVariant)}
+          onChange={(e) => handleVariantChange(e.target.value, e)}
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        >
+          {product.variants.map((variant, index) => (
+            <option key={index} value={index}>
+              {variant.name} - ${variant.price} - {variant.stock} left
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="mb-4">
+        <img
+          src={
+            selectedVariant.images[0]?.image ||
+            "https://via.placeholder.com/150"
+          }
+          alt={selectedVariant.name}
+          className="w-full h-48 object-content rounded-lg shadow-md"
+        />
+      </div>
+      <div className="mb-4">
+        <label
+          className="block text-gray-700 text-sm font-bold mb-2"
+          htmlFor="quantity"
+        >
+          Quantity
+        </label>
+        <input
+          type="number"
+          id="quantity"
+          value={quantity}
+          onChange={handleQuantityChange}
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          min="1"
+        />
+      </div>
+      <div className="mb-4">
+        <p className="text-gray-700">
+          Total Price: $
+          {product.variants[product.variants.indexOf(selectedVariant)].price *
+            quantity}
+        </p>
+      </div>
+      <div className="mt-4">
+        <button
+          onClick={handleAddToCart}
+          className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition-transform duration-300 ease-in-out"
+        >
+          Add to Cart
         </button>
       </div>
     </Modal>
