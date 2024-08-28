@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics,status
-from .serializers import UserSerializer, MessageSerializer,ProductSerializer, LoginSerializer, CustomTokenObtainPairSerializer, OrderSerializer
+from .serializers import UserSerializer, MessageSerializer,ProductSerializer, LoginSerializer, CustomTokenObtainPairSerializer, OrderSerializer, ProductImageSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -129,6 +129,15 @@ class ProductUpdateView(generics.UpdateAPIView):
     def get_queryset(self):
         user = self.request.user
         return Product.objects.filter(owner=user)
+
+class EditProductVariantView(generics.UpdateAPIView):
+    queryset = ProductImage.objects.all()
+    serializer_class = ProductImageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return ProductImage.objects.filter(variant__product__owner=user)
 
 class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
