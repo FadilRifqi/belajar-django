@@ -117,7 +117,7 @@ class Cart(models.Model):
         return f"Cart of {self.user.username}"
 # CartItem db model
 class CartItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product')
+    variant_product = models.ForeignKey(Variant, on_delete=models.CASCADE, related_name='variant_product')
     quantity = models.PositiveIntegerField(default=1)
     cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

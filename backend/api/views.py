@@ -180,16 +180,18 @@ class UserCartView(generics.GenericAPIView):
             return Response({'message': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
 
         cart_items = cart.items.all()
-        total = sum(item.product.price * item.quantity for item in cart_items)
+        total = sum(item.variant_product.price * item.quantity for item in cart_items)
 
         # Serialize cart items
         cart_items_data = [
             {
-                'id': item.product.id,
-                'product': item.product.name,
+                'id': item.variant_product.product.id,
+                'product': item.variant_product.product.name,
+                'variant': item.variant_product.name,
+                'image' : item.variant_product.images.first().image.url,
                 'quantity': item.quantity,
-                'price': item.product.price,
-                'total_price': item.product.price * item.quantity
+                'price': item.variant_product.price,
+                'total_price': item.variant_product .price * item.quantity
             }
             for item in cart_items
         ]
@@ -208,11 +210,14 @@ class AddToCartView(generics.CreateAPIView):
 
         # Get product and cart, handle exceptions if they do not exist
         try:
-            product = Product.objects.get(pk=pk)
-        except Product.DoesNotExist:
+            product = Variant.objects.get(pk=pk)
+        except Variant.DoesNotExist:
             return Response({'message': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        if product.owner == user:
+        if product.stock <= 0:
+            return Response({'message': 'Product out of stock'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if product.product.owner == user:
             return Response({'message': 'You cannot add your own product to the cart'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Use atomic transaction to ensure the operations are done atomically
@@ -221,13 +226,17 @@ class AddToCartView(generics.CreateAPIView):
             cart, created = Cart.objects.get_or_create(user=user)
 
             # Try to get an existing CartItem, if it does not exist, create a new one
-            cart_item, created = CartItem.objects.get_or_create(product=product, cart=cart)
+            cart_item, created = CartItem.objects.get_or_create(variant_product=product, cart=cart)
             if not created:
                 # If the item already exists, increase its quantity
                 cart_item.quantity += quantity
+                product.stock -= quantity
+                product.save()
                 cart_item.save()
             else:
                 cart_item.quantity = quantity
+                product.stock -= quantity
+                product.save()
                 cart_item.save()
 
         return Response({'message': 'Product added to cart successfully'}, status=status.HTTP_200_OK)
