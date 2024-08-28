@@ -4,7 +4,7 @@ from .serializers import UserSerializer, MessageSerializer,ProductSerializer, Lo
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import Message , Product, CustomUser,Cart,CartItem,Order
+from .models import Message , Product, CustomUser, Cart, CartItem, Order, Variant, ProductImage
 from django.db import transaction
 from django.db.models import Q
 from rest_framework.response import Response
@@ -38,7 +38,7 @@ class EditUserView(generics.UpdateAPIView):
         response = super().update(request, *args, **kwargs)
 
         refresh = RefreshToken.for_user(user)
-        
+
         # Custom payload
         refresh['email'] = user.email
         refresh['username'] = user.username
@@ -54,8 +54,8 @@ class EditUserView(generics.UpdateAPIView):
         response.data['access'] = str(access_token)
         response.data['message'] = 'User information updated successfully'
 
-        return response 
-    
+        return response
+
 class DeleteUserView(generics.DestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
@@ -85,7 +85,7 @@ class MessageDeleteView(generics.DestroyAPIView):
     def get_queryset(self):
         user = self.request.user
         return Message.objects.filter(sender=user)
-    
+
 class MessageListView(generics.ListAPIView):
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated]
@@ -93,11 +93,10 @@ class MessageListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Message.objects.filter(Q(sender=user) | Q(receiver=user))
-    
+
 class CreateProductView(generics.CreateAPIView):
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
-
     def get_queryset(self):
         user = self.request.user
         return Product.objects.filter(owner=user)
@@ -107,12 +106,13 @@ class CreateProductView(generics.CreateAPIView):
             serializer.save(owner=self.request.user)
         else:
             print(serializer.errors)
+
 class ProductDetailView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
 
-    
+
 class DeleteProductView(generics.DestroyAPIView):
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
@@ -120,7 +120,7 @@ class DeleteProductView(generics.DestroyAPIView):
     def get_queryset(self):
         user = self.request.user
         return Product.objects.filter(owner=user)
-    
+
 class ProductUpdateView(generics.UpdateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -150,7 +150,7 @@ class LoginView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        
+
         # Pass the request context to the token serializer
         CustomTokenObtainPairSerializer.context = {'request': request}
         refresh = CustomTokenObtainPairSerializer.get_token(user)
@@ -164,12 +164,12 @@ class UserCartView(generics.GenericAPIView):
 
     def get(self, request):
         user = request.user
-        
+
         try:
             cart = Cart.objects.get(user=user)
         except Cart.DoesNotExist:
             return Response({'message': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
-        
+
         cart_items = cart.items.all()
         total = sum(item.product.price * item.quantity for item in cart_items)
 
@@ -184,7 +184,7 @@ class UserCartView(generics.GenericAPIView):
             }
             for item in cart_items
         ]
-        
+
         return Response({
             'cart_items': cart_items_data,
             'total': total
@@ -196,7 +196,7 @@ class AddToCartView(generics.CreateAPIView):
     def post(self, request, pk):
         user = request.user
         quantity = int(request.query_params.get('quantity', 1))
-        
+
         # Get product and cart, handle exceptions if they do not exist
         try:
             product = Product.objects.get(pk=pk)

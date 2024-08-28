@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Message,Product,CustomUser,Order,Variant
+from .models import Message,Product,CustomUser,Order,Variant,ProductImage
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['id', 'username', 'email','profile_picture' ,'password']
         extra_kwargs = {'password': {'write_only': True}}
-        
+
     def validate_email(self, value):
         user = self.context['request'].user
         if CustomUser.objects.filter(email=value).exclude(id=user.id).exists():
@@ -28,7 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
     def create(self, validated_data):
-        user = CustomUser.objects.create_user(**validated_data) 
+        user = CustomUser.objects.create_user(**validated_data)
         return user
 
 class MessageSerializer(serializers.ModelSerializer):
@@ -37,28 +37,34 @@ class MessageSerializer(serializers.ModelSerializer):
         fields = ['id', 'sender', 'receiver', 'message', 'file', 'timestamp']
         extra_kwargs = {'sender': {'read_only': True}}
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ['id', 'variant', 'image']
+        extra_kwargs = {'variant': {'read_only': True}}
+
 class VariantSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True)
     class Meta:
         model = Variant
-        fields = ['id', 'name', 'price', 'stock']
+        fields = ['id', 'name', 'price', 'stock','images']
 
 class ProductSerializer(serializers.ModelSerializer):
     variants = VariantSerializer(many=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'category', 'description', 'owner', 'image', 'timestamp', 'variants']
+        fields = ['id', 'name', 'category', 'description', 'owner', 'timestamp', 'variants']
         extra_kwargs = {'owner': {'read_only': True}}
 
     def create(self, validated_data):
-        variants_data = validated_data.pop('variants', [])
-
-        if isinstance(variants_data, str):
-            variants_data = json.loads(variants_data)
-            
+        variants_data = validated_data.pop('variants')
         product = Product.objects.create(**validated_data)
         for variant_data in variants_data:
-            Variant.objects.create(product=product, **variant_data)
+            images_data = variant_data.pop('images', [])
+            variant = Variant.objects.create(product=product, **variant_data)
+            for image_data in images_data:
+                ProductImage.objects.create(variant=variant, **image_data)
         return product
 
 class LoginSerializer(serializers.Serializer):
@@ -68,7 +74,7 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, data):
         email = data.get('email')
         password = data.get('password')
-        
+
         if not email or not password:
             raise serializers.ValidationError('Must include "email" and "password".')
 
@@ -89,7 +95,7 @@ class LoginSerializer(serializers.Serializer):
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
-    
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):

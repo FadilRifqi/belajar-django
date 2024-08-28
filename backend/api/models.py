@@ -7,14 +7,14 @@ import re
 def validate_password(value: str) -> None:
     if len(value) < 8:
         raise ValidationError("Password must be at least 8 characters long.")
-    
+
     patterns = [
         (r'[A-Z]', "Password must contain at least one uppercase letter."),
         (r'[a-z]', "Password must contain at least one lowercase letter."),
         (r'\d', "Password must contain at least one number."),
         (r'[@$!%*#?&]', "Password must contain at least one special character (@$!%*#?&)."),
     ]
-    
+
     for pattern, error_message in patterns:
         if not re.search(pattern, value):
             raise ValidationError(error_message)
@@ -23,10 +23,10 @@ class CustomUser(AbstractUser):
     username = models.CharField(max_length=150, unique=True)
     role_id = models.ForeignKey('Roles', on_delete=models.CASCADE, blank=True, null=True)
     display_name = models.CharField(
-        max_length=50, 
-        unique=False, 
-        blank=True, 
-        null=True, 
+        max_length=50,
+        unique=False,
+        blank=True,
+        null=True,
         help_text="Optional. A name displayed to other users instead of the username."
     )
     email = models.EmailField(unique=True)
@@ -49,15 +49,15 @@ class Roles(models.Model):
 # Message db model
 class Message(models.Model):
     sender = models.ForeignKey(
-        CustomUser, 
-        related_name='sent_messages', 
-        on_delete=models.CASCADE, 
+        CustomUser,
+        related_name='sent_messages',
+        on_delete=models.CASCADE,
         db_index=True
     )
     receiver = models.ForeignKey(
-        CustomUser, 
-        related_name='received_messages', 
-        on_delete=models.CASCADE, 
+        CustomUser,
+        related_name='received_messages',
+        on_delete=models.CASCADE,
         db_index=True
     )
     message = models.TextField()
@@ -70,7 +70,7 @@ class Message(models.Model):
 
     def __str__(self):
         return f'Message from {self.sender} to {self.receiver} at {self.timestamp}'
-    
+
     def clean(self):
         if self.sender == self.receiver:
             raise ValidationError(_("Sender and receiver cannot be the same user."))
@@ -85,11 +85,19 @@ class Product(models.Model):
     category = models.CharField(max_length=100,default="General")
     description = models.TextField(max_length=500,default="description")
     owner = models.ForeignKey(CustomUser, related_name='products', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+# Product Image db model
+class ProductImage(models.Model):
+    variant = models.ForeignKey('Variant', related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+
+    def __str__(self):
+        return f"Image of {self.variant.product.name}"
+
 # Variant db model
 class Variant(models.Model):
     product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
