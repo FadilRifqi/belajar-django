@@ -3,6 +3,7 @@ import Layout from "./layouts/Layout";
 import Card from "../components/Card";
 import { useEffect, useState } from "react";
 import api from "../api.js";
+import { useNavigate } from "react-router-dom";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 10 },
@@ -11,6 +12,7 @@ const fadeInUp = {
 
 function Cart() {
   const [products, setProducts] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -64,7 +66,10 @@ function Cart() {
               <p className="text-gray-600 mb-4">
                 Yuk, isi dengan barang-barang impianmu!
               </p>
-              <button className="bg-green-500 text-white py-2 px-4 rounded-md">
+              <button
+                onClick={() => navigate("/")}
+                className="bg-green-500 text-white py-2 px-4 rounded-md"
+              >
                 Mulai Belanja
               </button>
             </motion.div>

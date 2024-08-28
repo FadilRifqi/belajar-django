@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import axios from "axios";
 import Card from "./Card";
 import LoadingComponent from "./LoadingComponent";
 
-function CardList({ products, loading }) {
+function CardList({ products, loading, setProducts }) {
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [priceFilter, setPriceFilter] = useState("");
   const [reviewFilter, setReviewFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const handleCategoryChange = (event) => {
     setCategoryFilter(event.target.value);
@@ -19,6 +23,21 @@ function CardList({ products, loading }) {
 
   const handleReviewChange = (event) => {
     setReviewFilter(event.target.value);
+  };
+
+  const loadMore = async () => {
+    setIsLoadingMore(true);
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/products/list/all/?page=${page + 1}`
+      );
+      setProducts((prevProducts) => [...prevProducts, ...res.data.results]);
+      setPage((prevPage) => prevPage + 1);
+    } catch (error) {
+      console.error("Failed to load more products:", error);
+    } finally {
+      setIsLoadingMore(false);
+    }
   };
 
   useEffect(() => {
@@ -46,11 +65,12 @@ function CardList({ products, loading }) {
   }, []);
 
   return (
-    <section
+    <motion.section
       ref={sectionRef}
-      className={`px-3 py-6 min-h-[40vh] transition-opacity duration-1000 ease-in-out rounded ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: isVisible ? 1 : 0 }}
+      transition={{ duration: 1 }}
+      className="px-3 py-6 min-h-[40vh] rounded"
     >
       <div className="flex flex-wrap gap-4 mb-4">
         <div className="flex flex-col w-full sm:w-auto">
@@ -94,19 +114,25 @@ function CardList({ products, loading }) {
           }`}
         >
           {loading ? (
-            <div className="flex  justify-center items-center">
+            <div className="flex justify-center items-center">
               <LoadingComponent />
             </div>
           ) : products.length !== 0 ? (
-            products.map((card) => (
-              <Card
-                image={card.image}
-                id={card.id}
-                key={card.id}
-                title={card.name}
-                content={card.description}
-                price={card.variants[0]?.price || 0}
-              />
+            products.map((card, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Card
+                  image={card.variants[0]?.images[0]?.image}
+                  id={card.id}
+                  title={card.name}
+                  content={card.description}
+                  price={card.variants[0]?.price || 0}
+                />
+              </motion.div>
             ))
           ) : (
             <div className="w-full h-full text-center text-red-500">
@@ -115,8 +141,19 @@ function CardList({ products, loading }) {
             </div>
           )}
         </div>
+        {products.length !== 0 && (
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={loadMore}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md"
+              disabled={isLoadingMore}
+            >
+              {isLoadingMore ? "Loading..." : "Load More"}
+            </button>
+          </div>
+        )}
       </div>
-    </section>
+    </motion.section>
   );
 }
 

@@ -45,7 +45,7 @@ function Dashboard() {
   const barChartRef = useRef(null);
   const [products, setProducts] = useState([]);
   const [variants, setVariants] = useState([
-    { name: "", price: "", image: null, stock: "" },
+    { name: "", price: "", images: [{ image: null }], stock: "" },
   ]);
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
@@ -61,8 +61,9 @@ function Dashboard() {
   const handleVariantChange = (index, event) => {
     const { name, value, files } = event.target;
     const newVariants = [...variants];
+
     if (name === "image") {
-      newVariants[index][name] = files[0];
+      newVariants[index].images["image"] = files[0];
     } else {
       newVariants[index][name] = value;
     }
@@ -70,7 +71,10 @@ function Dashboard() {
   };
 
   const addVariant = () => {
-    setVariants([...variants, { name: "", price: "", image: null, stock: "" }]);
+    setVariants([
+      ...variants,
+      { name: "", price: "", images: [{ image: null }], stock: "" },
+    ]);
   };
 
   const removeVariant = (index) => {
@@ -113,7 +117,9 @@ function Dashboard() {
     setCategory("");
     setDescription("");
     setPrice(0);
-    setVariants([{ name: "", price: "", image: null, stock: "" }]);
+    setVariants([
+      { name: "", price: "", images: [{ image: null }], stock: "" },
+    ]);
     setCreateModalIsOpen(true);
   };
   const closeCreateModal = () => setCreateModalIsOpen(false);
@@ -143,24 +149,52 @@ function Dashboard() {
       variants,
     };
 
+    console.log("Product Data: ", productData);
+
     try {
+      // Create the product first
       const res = await api.post("/products/", productData, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      if (selectedImage) {
-        const formData = new FormData();
-        formData.append("image", selectedImage);
-        await api.patch(`/products/edit/${res.data.id}/`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-      }
-
+      const createdProduct = res.data;
+      console.log(createdProduct);
       toast.success("Product created successfully!");
+
+      // Patch each variant image
+
+      await Promise.all(
+        variants.map(async (variant, index) => {
+          console.log("Variant", variant);
+
+          try {
+            console.log(variant["images"]["image"]);
+
+            const formData = new FormData();
+            formData.append("image", variant["images"]["image"]);
+            console.log("Image: ", variant["images"]["image"]);
+            console.log(
+              "created product ",
+              createdProduct.variants[index].images[0].id
+            );
+
+            const res = await api.patch(
+              `/products/variants/${createdProduct.variants[index].images[0].id}/`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+            console.log("Image uploaded: ", res.data);
+          } catch (error) {
+            console.log("Error uploading image: ", error);
+          }
+        })
+      );
+
       setCreateModalIsOpen(false);
     } catch (error) {
       console.error("Error creating product: ", error);
@@ -347,7 +381,7 @@ function Dashboard() {
                     >
                       <img
                         className="w-full max-h-[10rem] object-fill"
-                        src={product.image}
+                        src={product.variants[0].images[0].image}
                         alt={product.name}
                       />
                       <div className="px-6 py-4 mt-auto">

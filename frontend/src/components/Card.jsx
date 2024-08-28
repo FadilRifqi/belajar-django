@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import Button from "./Button";
 
 const variants = {
   hidden: { opacity: 0, translateY: 20 },

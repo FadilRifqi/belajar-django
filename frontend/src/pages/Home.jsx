@@ -8,14 +8,16 @@ import axios from "axios";
 function Home() {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const res = await axios.get(
-          import.meta.env.VITE_API_URL + "/products/list/all/"
+          import.meta.env.VITE_API_URL + `/products/list/all/?page=${page}`
         );
+
         setProducts(res.data.results);
       } catch (error) {
         console.log(error);
@@ -25,14 +27,19 @@ function Home() {
     };
 
     fetchData();
-  }, []);
+  }, [page]);
+
   return (
     <Layout>
       <Helmet>
         <title>Buyee | Home</title>
       </Helmet>
       <Carousel />
-      <CardList products={products} loading={loading} />
+      <CardList
+        products={products}
+        loading={loading}
+        setProducts={setProducts}
+      />
     </Layout>
   );
 }

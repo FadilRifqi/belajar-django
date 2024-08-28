@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Modal from "react-modal";
 
 export function CreateModals({
@@ -131,7 +130,7 @@ export function CreateModals({
               type="file"
               id={`variantImage-${index}`}
               name="image"
-              onChange={handleFileChange}
+              onChange={(e) => handleVariantChange(index, e)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               accept="image/*"
             />

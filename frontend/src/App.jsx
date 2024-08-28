@@ -59,7 +59,14 @@ function App() {
             </OpenRoute>
           }
         />
-        <Route path="/product/:id" element={<Product />} />
+        <Route
+          path="/product/:id"
+          element={
+            <OpenRoute>
+              <Product />
+            </OpenRoute>
+          }
+        />
         <Route
           path="/dashboard"
           element={
